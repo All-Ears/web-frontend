@@ -1,41 +1,50 @@
-<template>
-    <tr>
-        <td scope="row"><button @click="requestRemoval">Remove</button></td>
-        <td><input type="text" v-model="value.unRegion" /></td>
-        <td><input type="text" v-model="value.subregionName" /></td>
-        <td><input type="text" v-model="value.subregionId" /></td>
-        <td><input type="text" v-model="value.countryName" /></td>
-        <td><input type="text" v-model="value.countryCode" /></td>
-        <td><input type="text" v-model="value.mikeSiteId" /></td>
-        <td><input type="text" v-model="value.mikeSiteName" /></td>
-        <td><input type="text" v-model="value.year" /></td>
-        <td>
-            <input type="text" v-model="value.totalNumberOfCarcasses" />
-        </td>
-        <td>
-            <input type="text" v-model="value.numberOfIllegalCarcasses" />
-        </td>
-    </tr>
+<template lang="pug">
+tr
+  td.px-2
+    button(@click='requestRemoval')
+      font-awesome-icon(icon='times-circle')
+  td
+    input(type='text' v-model='value.unRegion')
+  td
+    input(type='text' v-model='value.subregionName')
+  td
+    input(type='text' v-model='value.subregionId')
+  td
+    input(type='text' v-model='value.countryName')
+  td
+    input(type='text' v-model='value.countryCode')
+  td
+    input(type='text' v-model='value.mikeSiteId')
+  td
+    input(type='text' v-model='value.mikeSiteName')
+  td
+    input(type='number' v-model='value.year')
+  td
+    input(type='number' v-model='value.totalNumberOfCarcasses')
+  td
+    input(type='number' v-model='value.numberOfIllegalCarcasses')
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, watch, reactive } from "vue"
+import { defineComponent, PropType, watch, ref } from "vue"
 import { MikeRecord } from "@/models"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 export default defineComponent({
     name: "MikeRecordRow",
     props: {
-        index: {
-            type: Number as PropType<number>,
-            required: true,
-        },
         record: {
             type: Object as PropType<MikeRecord>,
             required: true,
         },
     },
     setup(props, context) {
-        const value = reactive(props.record)
+        const value = ref({ ...props.record })
+
+        watch(
+            () => props.record,
+            () => (value.value = props.record)
+        )
 
         watch(
             value,
@@ -44,10 +53,24 @@ export default defineComponent({
             },
             { deep: true }
         )
+
         function requestRemoval() {
-            context.emit("remove", props.index)
+            context.emit("remove")
         }
         return { value, requestRemoval }
     },
+    components: { FontAwesomeIcon },
 })
 </script>
+<style lang="sass" scoped>
+input
+    max-width: 100px
+
+td
+    @apply py-2
+    input
+        @apply bg-gray-100 rounded px-1
+
+button
+    @apply text-red-500
+</style>

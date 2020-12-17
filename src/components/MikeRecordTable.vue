@@ -1,30 +1,21 @@
-<template>
-    <table class="mike-table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>UN Region</th>
-                <th>UN Subregion</th>
-                <th>UN Subregion Id</th>
-                <th>Country</th>
-                <th>Country Code</th>
-                <th>MIKE Site</th>
-                <th>MIKE Site Id</th>
-                <th>Year</th>
-                <th>Total Carcasses</th>
-                <th>Illegal Carcasses</th>
-            </tr>
-        </thead>
-        <tbody>
-            <mike-record-row
-                v-for="index in values.length - 1"
-                :key="index"
-                v-model:record="values[index]"
-                :index="index"
-                @v-on:remove="removeItem(key)"
-            />
-        </tbody>
-    </table>
+<template lang="pug">
+table(class="table border-collapse")
+  thead(class="border-t-2 border-b-2")
+    tr
+      th
+      th UN Region
+      th UN Subregion
+      th UN Subregion Id
+      th Country
+      th Country Code
+      th MIKE Site
+      th MIKE Site Id
+      th Year
+      th Total Carcasses
+      th Illegal Carcasses
+  tbody(class="divide-y")
+    template(v-for='(val, i) of values' :key='"record: "+i')
+      mike-record-row(v-model:record='values[i]' @remove='removeItem(i)')
 </template>
 
 <script lang="ts">
@@ -41,7 +32,13 @@ export default defineComponent({
     },
 
     setup(props, context) {
-        const values = ref(props.records)
+        const values = ref<MikeRecord[]>([])
+
+        watch(
+            () => props.records,
+            (val) => (values.value = val)
+        )
+
         watch(
             values,
             (val) => {
@@ -49,8 +46,8 @@ export default defineComponent({
             },
             { deep: true }
         )
+
         function removeItem(index: number) {
-            console.log("Removal attempted")
             values.value.splice(index, 1)
         }
 
@@ -60,11 +57,8 @@ export default defineComponent({
 })
 </script>
 
-<style lang="sass">
-.mike-table
-    @apply table-auto border-collapse
-    tbody, thead
-        tr
-            th, td
-                @apply border p-1
+<style lang="sass" scoped>
+
+th
+    @apply p-2 text-left
 </style>
