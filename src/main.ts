@@ -4,9 +4,13 @@ import "@/assets/css/main.sass"
 import router from "./router"
 import store from "./store"
 import { library } from "@fortawesome/fontawesome-svg-core"
-import { faTimesCircle, faSave } from "@fortawesome/free-solid-svg-icons"
+import {
+    faTimesCircle,
+    faSave,
+    faPlus,
+} from "@fortawesome/free-solid-svg-icons"
 
-library.add(faTimesCircle, faSave)
+library.add(faTimesCircle, faPlus, faSave)
 
 createApp(App)
     .use(store)

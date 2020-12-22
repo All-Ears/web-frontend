@@ -1,24 +1,42 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
+import {
+    createRouter,
+    createWebHistory,
+    RouteRecordRaw,
+    RouteMeta,
+} from "vue-router"
 import EditData from "@/views/EditData.vue"
+import UploadData from "@/views/UploadData.vue"
 import Login from "@/views/Login.vue"
+import { isLoggedIn } from "@/auth"
+
+function restrictAccess(to: RouteMeta, from: RouteMeta, next: Function) {
+    if (!isLoggedIn()) {
+        next({ name: "Login" })
+    }
+    next()
+}
 
 const routes: Array<RouteRecordRaw> = [
     {
         path: "/",
-        name: "Edit Data",
+        name: "Root",
         component: EditData,
     },
     {
-        path: "/",
-        name: "Edit Mike Records",
+        path: "/admin/upload",
+        name: "Admin.Upload",
+        component: UploadData,
+        beforeEnter: restrictAccess,
+    },
+    {
+        path: "/admin/edit",
+        name: "Admin.Edit",
         component: EditData,
+        beforeEnter: restrictAccess,
     },
     {
         path: "/login",
         name: "Login",
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: Login,
     },
 ]

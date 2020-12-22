@@ -1,26 +1,36 @@
-<template>
-    <div id="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
+<template lang="pug">
+div(id="nav" class="bg-gray-200 p-3")
+    
+    router-link(class="mr-2" to="/") 
+        h1 All Ears
+    router-link(class="mr-2" v-if="!loggedIn" to="/login") Login
+    router-link(class="mr-2" v-else @click="logout()") Login
+    template(v-if="loggedIn")
+        router-link(class="mr-2" to="/admin/edit") Edit Records
+        router-link(class="mr-2" to="/admin/upload") Upload Records
+router-view
 </template>
+
+<script lang="ts">
+import { isLoggedIn, logout } from "@/auth"
+import { computed, defineComponent } from "vue"
+export default defineComponent({
+    setup() {
+        const loggedIn = computed<boolean>(isLoggedIn)
+        return { loggedIn, logout }
+    },
+})
+</script>
 
 <style lang="sass">
 #app
     font-family: Avenir, Helvetica, Arial, sans-serif
-    -webkit-font-smoothing: antialiased
-    -moz-osx-font-smoothing: grayscale
-    text-align: center
-    color: #2c3e50
 
 #nav
-    padding: 30px
-
-    a
+    display: flex
+    flex-direction: row
+    a, h1
         font-weight: bold
-        color: #2c3e50
-
         &.router-link-exact-active
-            color: #42b983
+            @apply text-pink-400
 </style>
