@@ -26,16 +26,18 @@ export default defineComponent({
         const pwd = ref("")
         const pwdInvalid = ref(false)
         function submitPassword(pwd: string) {
+            console.log("password submitted")
             login(pwd)
                 .then(() => {
-                    Router.push({ name: "Root" })
+                    Router.push({ name: "Root" }).catch((err) => {
+                        console.error(err)
+                    })
                 })
                 .catch((err) => {
                     const res = err.response
                     if (res && res.status === 401) {
                         pwdInvalid.value = true
                     }
-                    console.error(err)
                 })
         }
 

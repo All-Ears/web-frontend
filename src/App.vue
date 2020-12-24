@@ -4,7 +4,7 @@ div(id="nav" class="bg-gray-200 p-3")
     router-link(class="mr-2" to="/") 
         h1 All Ears
     router-link(class="mr-2" v-if="!loggedIn" to="/login") Login
-    router-link(class="mr-2" v-else @click="logout()") Login
+    a(class="mr-2" v-else @click="logout()") Logout
     template(v-if="loggedIn")
         router-link(class="mr-2" to="/admin/edit") Edit Records
         router-link(class="mr-2" to="/admin/upload") Upload Records
