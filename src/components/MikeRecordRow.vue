@@ -43,7 +43,8 @@ export default defineComponent({
 
         watch(
             () => props.record,
-            () => (value.value = props.record)
+            () => (value.value = props.record),
+            { deep: true }
         )
 
         watch(

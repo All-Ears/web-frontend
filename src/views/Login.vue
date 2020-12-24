@@ -56,6 +56,4 @@ export default defineComponent({
 
     *
         @apply m-2
-
-    button
 </style>

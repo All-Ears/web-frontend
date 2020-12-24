@@ -26,12 +26,12 @@ export function isLoggedIn(): boolean {
 }
 
 export async function login(pwd: string) {
-    const res = await Axios.post("/login", { password: pwd })
+    const res = await Axios.post("/api/login", { password: pwd })
     updateLoginState(res.data.token)
 }
 
 export async function renewSession() {
-    const res = await Axios.get("/refreshtoken")
+    const res = await Axios.get("/api/refreshtoken")
     updateLoginState(res.data.token)
 }
 

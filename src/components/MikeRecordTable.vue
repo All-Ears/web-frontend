@@ -36,7 +36,8 @@ export default defineComponent({
 
         watch(
             () => props.records,
-            (val) => (values.value = val)
+            (val) => (values.value = val),
+            { deep: true }
         )
 
         watch(
@@ -60,5 +61,5 @@ export default defineComponent({
 <style lang="sass" scoped>
 
 th
-    @apply p-2 text-left
+    @apply p-2 text-center
 </style>

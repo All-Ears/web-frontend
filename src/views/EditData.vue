@@ -25,7 +25,7 @@ export default defineComponent({
         const records = ref<MikeRecord[]>([])
         function loadRecords() {
             // debug value, replace with "/api/mikerecords"
-            Axios.get("/records-mock.json")
+            Axios.get("/api/mikerecords")
                 .then((res: AxiosResponse<MikeRecord[]>) => {
                     records.value = res.data
                 })
