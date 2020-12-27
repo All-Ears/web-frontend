@@ -1,39 +1,47 @@
 <template lang="pug">
-div(class="flex flex-col justify-around p-4 items-center")
-    mike-record-table(v-model:records="records")
-    div(class="fixed-panel p-5")
-        button(class="rounded bg-green-300 py-1 px-3" @click="addRecord()") 
-            font-awesome-icon(class="mr-2" icon="plus") 
+div(class="p-4 overflow-auto")
+    loading-spinner(class="m-auto" :class='{"hidden": loadState !== "loading"}')
+    p(class="text-center" :class='{"hidden": loadState !== "failed"}') Records could not be loaded
+    mike-record-table(:class='{"hidden": loadState !== "done"}' v-model:records="records")
+    div(class="h-20")
+    div(class="fixed bottom-0 h-20 w-screen flex flex-row justify-between items-center p-5 border-t-2 bg-white" 
+    :class='{"hidden": loadState !== "done"}')
+        button(class="rounded bg-green-300 py-1 px-3" @click="addRecord()")
+            font-awesome-icon(class="mr-2" icon="plus")
             | Add Record
-        button(class="rounded bg-green-300 py-1 px-3") 
-            font-awesome-icon(class="mr-2" icon="save") 
+        button(class="rounded bg-green-300 py-1 px-3")
+            font-awesome-icon(class="mr-2" icon="save")
             | Save changes
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue"
 import MikeRecordTable from "@/components/MikeRecordTable.vue"
+import LoadingSpinner from "@/components/LoadingSpinner.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { MikeRecord } from "@/models"
 import Axios, { AxiosResponse } from "axios"
 import Router from "@/router"
 
+type LoadState = "loading" | "done" | "failed"
+
 export default defineComponent({
     name: "EditData",
-    components: { MikeRecordTable, FontAwesomeIcon },
+    components: { MikeRecordTable, FontAwesomeIcon, LoadingSpinner },
     setup() {
         const records = ref<MikeRecord[]>([])
+        const loadState = ref("loading")
         function loadRecords() {
-            // debug value, replace with "/api/mikerecords"
             Axios.get("/api/mikerecords")
                 .then((res: AxiosResponse<MikeRecord[]>) => {
                     records.value = res.data
+                    loadState.value = "done"
                 })
                 .catch((err) => {
                     if (err.status == 401) {
                         Router.push("login")
                     } else {
-                        console.error("Failed to to fetch MIKE records", err)
+                        loadState.value = "failed"
                     }
                 })
         }
@@ -52,19 +60,8 @@ export default defineComponent({
                 numberOfIllegalCarcasses: 0,
             })
         }
-
         onMounted(loadRecords)
-        return { records, addRecord }
+        return { records, loadState, addRecord }
     },
 })
 </script>
-<style lang="sass" scoped>
-.fixed-panel
-    position: fixed
-    bottom: 0px
-    width: 100vw
-    display: flex
-    flex-direction: row
-    justify-content: space-between
-    align-items: center
-</style>

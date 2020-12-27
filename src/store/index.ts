@@ -9,7 +9,13 @@ export default createStore({
         updateSecurityToken(state, data: string) {
             state.securityToken = data
             // This must change if we make any requests to anywhere other than our backend
-            Axios.defaults.headers.common["Authorization Bearer"] = data
+            if (data) {
+                Axios.defaults.headers.common[
+                    "Authorization"
+                ] = `Bearer ${data}`
+            } else {
+                delete Axios.defaults.headers.common["Authorization"]
+            }
         },
         updeateLoggedInUntil(state, data: number) {
             state.loggedInUntil = data

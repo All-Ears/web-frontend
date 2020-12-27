@@ -1,13 +1,13 @@
 <template lang="pug">
-div(id="nav" class="bg-gray-200 p-3")
-    
-    router-link(class="mr-2" to="/") 
-        h1 All Ears
+nav(id="nav" class="flex flex-row justify-between bg-gray-200 p-3")
+    div(class="flex flex-row justify-around")
+        router-link(class="mr-2" to="/") 
+            h1(class="font-bold") All Ears
+        template(v-if="loggedIn")
+            router-link(class="mr-2" to="/admin/edit") Edit Records
+            router-link(class="mr-2" to="/admin/upload") Upload Records
     router-link(class="mr-2" v-if="!loggedIn" to="/login") Login
-    a(class="mr-2" v-else @click="logout()") Logout
-    template(v-if="loggedIn")
-        router-link(class="mr-2" to="/admin/edit") Edit Records
-        router-link(class="mr-2" to="/admin/upload") Upload Records
+    router-link(class="mr-2" v-else  to="/login" @click="logout()") Logout
 router-view
 </template>
 
@@ -25,12 +25,11 @@ export default defineComponent({
 <style lang="sass">
 #app
     font-family: Avenir, Helvetica, Arial, sans-serif
+    height: 100%
 
 #nav
-    display: flex
-    flex-direction: row
-    a, h1
-        font-weight: bold
+    a
+        @apply mx-2
         &.router-link-exact-active
             @apply text-pink-400
 </style>

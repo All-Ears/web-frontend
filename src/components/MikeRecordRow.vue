@@ -1,28 +1,28 @@
 <template lang="pug">
-tr
-  td.px-2
-    button(@click='requestRemoval')
-      font-awesome-icon(icon='times-circle')
-  td
-    input(type='text' v-model='value.unRegion')
-  td
-    input(type='text' v-model='value.subregionName')
-  td
-    input(type='text' v-model='value.subregionId')
-  td
-    input(type='text' v-model='value.countryName')
-  td
-    input(type='text' v-model='value.countryCode')
-  td
-    input(type='text' v-model='value.mikeSiteId')
-  td
-    input(type='text' v-model='value.mikeSiteName')
-  td
-    input(type='number' v-model='value.year')
-  td
-    input(type='number' v-model='value.totalNumberOfCarcasses')
-  td
-    input(type='number' v-model='value.numberOfIllegalCarcasses')
+tr(class="border-b")
+    td(class="border-b bg-white py-3 px-0.5 w-5")
+        button(@click='requestRemoval' class="text-red-500 w-5")
+            font-awesome-icon(icon='times-circle')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.unRegion')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.subregionName')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.subregionId')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.countryName')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.countryCode')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.mikeSiteName')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.mikeSiteId')
+    td(class="border-b bg-white py-3 px-0.5 w-18")
+        input(type="number" class="w-16 bg-gray-100 rounded px-1" v-model='value.year')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.totalNumberOfCarcasses')
+    td(class="border-b bg-white py-3 px-0.5")
+        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.numberOfIllegalCarcasses')
 </template>
 
 <script lang="ts">
@@ -63,15 +63,3 @@ export default defineComponent({
     components: { FontAwesomeIcon },
 })
 </script>
-<style lang="sass" scoped>
-input
-    max-width: 100px
-
-td
-    @apply py-2
-    input
-        @apply bg-gray-100 rounded px-1
-
-button
-    @apply text-red-500
-</style>
