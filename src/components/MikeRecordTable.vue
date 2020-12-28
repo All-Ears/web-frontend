@@ -2,18 +2,18 @@
 table(class="table-auto border-separate w-full")
     thead(class="text-left")
         tr
-            th(class="sticky top-0 m-0 bg-white border-b-2")
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") UN Region
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") UN Subregion
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") UN Subregion ID
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") Country
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") Country Code
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") MIKE Site
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") MIKE Site ID
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") Year
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") Total Carcasses
-            th(class="sticky top-0 m-0 bg-white border-b-2 py-1 px-1") Illegal Carcasses
-    tbody(class="max-h-80 relative overflow-auto divide-y")
+            th(class="sticky top-0 bg-white border-b-2")
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") UN Region
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") UN Subregion
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") UN Subregion ID
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") Country
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") Country Code
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") MIKE Site
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") MIKE Site ID
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") Year
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") Total Carcasses
+            th(class="sticky top-0 bg-white border-b-2 py-1 px-1") Illegal Carcasses
+    tbody
         template(v-for="(val, i) of values" :key="'record: '+i")
             mike-record-row(v-model:record='values[i]' @remove='removeItem(i)')
 </template>
@@ -57,5 +57,3 @@ export default defineComponent({
     components: { MikeRecordRow },
 })
 </script>
-
-<style lang="sass" scoped></style>

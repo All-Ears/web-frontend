@@ -1,13 +1,10 @@
 <template lang="pug">
+font-awesome-icon(icon="times")
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue"
-import MikeRecordTable from "@/components/MikeRecordTable.vue"
+import { defineComponent } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { MikeRecord } from "@/models"
-import Axios, { AxiosResponse } from "axios"
-import Router from "@/router"
 
 export default defineComponent({
     name: "UploadData",
@@ -15,4 +12,3 @@ export default defineComponent({
     // setup() {},
 })
 </script>
-<style lang="sass" scoped></style>

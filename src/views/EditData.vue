@@ -1,5 +1,5 @@
 <template lang="pug">
-div(class="p-4 overflow-auto")
+div(class="p-4" @keydown.ctrl.prevent="saveChanges($event)")
     loading-spinner(class="m-auto" :class='{"hidden": loadState !== "loading"}')
     p(class="text-center" :class='{"hidden": loadState !== "failed"}') Records could not be loaded
     mike-record-table(:class='{"hidden": loadState !== "done"}' v-model:records="records")
@@ -9,7 +9,7 @@ div(class="p-4 overflow-auto")
         button(class="rounded bg-green-300 py-1 px-3" @click="addRecord()")
             font-awesome-icon(class="mr-2" icon="plus")
             | Add Record
-        button(class="rounded bg-green-300 py-1 px-3")
+        button(class="rounded bg-green-300 py-1 px-3" @click="saveChanges()")
             font-awesome-icon(class="mr-2" icon="save")
             | Save changes
 </template>
@@ -34,7 +34,9 @@ export default defineComponent({
         function loadRecords() {
             Axios.get("/api/mikerecords")
                 .then((res: AxiosResponse<MikeRecord[]>) => {
-                    records.value = res.data
+                    if (Array.isArray(res.data)) {
+                        records.value = res.data
+                    }
                     loadState.value = "done"
                 })
                 .catch((err) => {
@@ -60,8 +62,14 @@ export default defineComponent({
                 numberOfIllegalCarcasses: 0,
             })
         }
+
+        function saveChanges(event: KeyboardEvent) {
+            if (event && event.key == "s") {
+                console.log()
+            }
+        }
         onMounted(loadRecords)
-        return { records, loadState, addRecord }
+        return { records, loadState, addRecord, saveChanges }
     },
 })
 </script>
