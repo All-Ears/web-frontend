@@ -34,7 +34,7 @@ export default defineComponent({
             event.preventDefault() // keep form from reloading page
             login(pwd)
                 .then(() => {
-                    Router.go(-1)
+                    Router.push({ name: "Root" })
                 })
                 .catch((err) => {
                     const res = err.response
