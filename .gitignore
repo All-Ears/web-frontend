@@ -1,6 +1,9 @@
 # Mock data
 *mock.json
 
+# Mac stuff
+.DS_Store
+
 # Logs
 logs
 *.log
