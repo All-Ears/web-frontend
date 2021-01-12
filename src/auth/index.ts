@@ -6,7 +6,7 @@ function updateLoginState(newToken: string | undefined | null) {
     if (newToken) {
         Store.commit("updateSecurityToken", newToken)
         Store.commit(
-            "updeateLoggedInUntil",
+            "updateLoggedInUntil",
             dayjs()
                 .add(30, "minute")
                 .unix()
@@ -15,13 +15,12 @@ function updateLoginState(newToken: string | undefined | null) {
         throw new Error("Token cannot be undefined or empty")
     }
 }
-
 export function isLoggedIn(): boolean {
-    const loggedInUntil = dayjs(Store.state.loggedInUntil)
+    const loggedInUntil = dayjs.unix(Store.state.loggedInUntil)
     const currentTime = dayjs()
     // check session expired
     return Boolean(
-        currentTime.isAfter(loggedInUntil) && Store.state.securityToken
+        currentTime.isBefore(loggedInUntil) && Store.state.securityToken
     )
 }
 
