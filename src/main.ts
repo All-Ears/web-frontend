@@ -8,9 +8,10 @@ import {
     faTimesCircle,
     faSave,
     faPlus,
+    faFileCsv,
 } from "@fortawesome/free-solid-svg-icons"
 
-library.add(faTimesCircle, faPlus, faSave)
+library.add(faTimesCircle, faPlus, faSave, faFileCsv)
 
 createApp(App)
     .use(store)

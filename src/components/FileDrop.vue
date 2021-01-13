@@ -1,13 +1,21 @@
 <template lang="pug">
-div(class="cursor-pointer rounded px-1" 
+div(
+    class="cursor-pointer rounded relative" 
     :class='{"outline-black": showOutline}' 
     @click="passToInput($event)" 
     @drop.prevent="dropFile($event)" 
     @dragover.prevent
     @dragenter="showOutline = true" 
-    @dragleave="showOutline = false")
-    input(class="opacity-0 w-0 h-0" type="file" @change="chooseFile($event)")
-    | Choose a file or drag it here
+    @dragleave="showOutline = false"
+)
+    input(
+        class="opacity-0 w-0 h-0" 
+        type="file" 
+        :multiple="multiple" 
+        @change="chooseFile($event)"
+    )
+    slot Click to add {{multiple ? "files" : "a file"}} or drag {{multiple ? "them" : "it"}} here.
+    p(class="absolute bottom-0 w-100 text-center mx-auto" v-if="files.length > 0") {{files.length}} file{{files.length > 1 ? "s" : ""}} uploaded.
 </template>
 
 <script lang="ts">
@@ -18,7 +26,11 @@ export default defineComponent({
     props: {
         files: {
             type: Array as PropType<File[]>,
-            required: true,
+            default: [] as File[],
+        },
+        multiple: {
+            type: Boolean,
+            default: false,
         },
     },
     setup(props, context) {
@@ -38,20 +50,19 @@ export default defineComponent({
             { deep: true }
         )
 
-        function updateFiles(files: FileList | null | undefined) {
-            if (files) {
-                values.value = [...files]
-            }
+        function updateFiles(fileList: FileList | null | undefined) {
+            values.value = fileList ? [...fileList] : ([] as File[])
         }
         function dropFile(event: DragEvent) {
             showOutline.value = false
             updateFiles(event.dataTransfer?.files)
         }
         function chooseFile(event: Event) {
-            updateFiles((event.target as HTMLInputElement).files)
+            updateFiles((event.currentTarget as HTMLInputElement).files)
         }
         function passToInput(event: Event) {
-            const target = event.target as HTMLDivElement
+            console.log(event.currentTarget)
+            const target = event.currentTarget as HTMLDivElement
             target.firstChild?.dispatchEvent(new MouseEvent("click"))
         }
 
