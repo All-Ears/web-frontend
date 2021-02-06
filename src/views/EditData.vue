@@ -4,8 +4,8 @@ div(class="p-4")
     p(class="text-center" :class='{"hidden": loadState !== "failed"}') Records could not be loaded
     mike-record-table(:class='{"hidden": loadState !== "done"}' v-model:records="records")
     div(class="h-20")
-    div(class="fixed bottom-0 h-20 w-screen flex flex-row justify-between items-center p-5 border-t-2 bg-white" 
-    :class='{"hidden": loadState !== "done"}')
+    div(class="fixed bottom-0 h-20 w-screen flex flex-row justify-between items-center p-5 border-t-2 bg-white"
+        :class='{"hidden": loadState !== "done"}')
         button(class="rounded bg-green-300 py-1 px-3" @click="addEmptyRecord()")
             font-awesome-icon(class="mr-2" icon="plus")
             | Add Record
@@ -29,11 +29,11 @@ export default defineComponent({
     name: "EditData",
     components: { MikeRecordTable, FontAwesomeIcon, LoadingSpinner },
     setup() {
+        const loadState = ref<LoadState>("loading")
         const records = ref<MikeRecord[]>([])
-        const loadState = ref("loading")
+        const addedRecords = ref<MikeRecord[]>([])
         const changedRecords = ref<MikeRecord[]>([])
         const removedRecords = ref<MikeRecord[]>([])
-        const addedRecords = ref<MikeRecord[]>([])
 
         function loadRecords() {
             Axios.get("/api/mikerecords")
@@ -70,6 +70,7 @@ export default defineComponent({
         function saveChanges() {
             console.log("")
         }
+
         onMounted(loadRecords)
         return {
             records,
