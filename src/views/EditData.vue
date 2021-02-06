@@ -1,12 +1,12 @@
 <template lang="pug">
-div(class="p-4" @keydown.ctrl.prevent="saveChanges($event)")
+div(class="p-4")
     loading-spinner(class="m-auto" :class='{"hidden": loadState !== "loading"}')
     p(class="text-center" :class='{"hidden": loadState !== "failed"}') Records could not be loaded
     mike-record-table(:class='{"hidden": loadState !== "done"}' v-model:records="records")
     div(class="h-20")
     div(class="fixed bottom-0 h-20 w-screen flex flex-row justify-between items-center p-5 border-t-2 bg-white" 
     :class='{"hidden": loadState !== "done"}')
-        button(class="rounded bg-green-300 py-1 px-3" @click="addRecord()")
+        button(class="rounded bg-green-300 py-1 px-3" @click="addEmptyRecord()")
             font-awesome-icon(class="mr-2" icon="plus")
             | Add Record
         button(class="rounded bg-green-300 py-1 px-3" @click="saveChanges()")
@@ -31,6 +31,10 @@ export default defineComponent({
     setup() {
         const records = ref<MikeRecord[]>([])
         const loadState = ref("loading")
+        const changedRecords = ref<MikeRecord[]>([])
+        const removedRecords = ref<MikeRecord[]>([])
+        const addedRecords = ref<MikeRecord[]>([])
+
         function loadRecords() {
             Axios.get("/api/mikerecords")
                 .then((res: AxiosResponse<MikeRecord[]>) => {
@@ -48,7 +52,7 @@ export default defineComponent({
                 })
         }
 
-        function addRecord() {
+        function addEmptyRecord() {
             records.value.push({
                 unRegion: "",
                 subregionName: "",
@@ -63,13 +67,17 @@ export default defineComponent({
             })
         }
 
-        function saveChanges(event: KeyboardEvent) {
-            if (event && event.key == "s") {
-                console.log()
-            }
+        function saveChanges() {
+            console.log("")
         }
         onMounted(loadRecords)
-        return { records, loadState, addRecord, saveChanges }
+        return {
+            records,
+            changedRecords,
+            loadState,
+            addEmptyRecord,
+            saveChanges,
+        }
     },
 })
 </script>
