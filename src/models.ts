@@ -7,6 +7,6 @@ export interface MikeRecord {
     mikeSiteId: string
     mikeSiteName: string
     year: number
-    totalNumberOfCarcasses: number
-    numberOfIllegalCarcasses: number
+    carcasses: number
+    illegalCarcasses: number
 }
