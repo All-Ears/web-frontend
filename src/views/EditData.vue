@@ -62,8 +62,8 @@ export default defineComponent({
                 mikeSiteId: "",
                 mikeSiteName: "",
                 year: 0,
-                totalNumberOfCarcasses: 0,
-                numberOfIllegalCarcasses: 0,
+                carcasses: 0,
+                illegalCarcasses: 0,
             })
         }
 
