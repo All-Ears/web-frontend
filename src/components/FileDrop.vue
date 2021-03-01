@@ -1,26 +1,11 @@
 <template lang="pug">
-div(
-    class="cursor-pointer rounded relative" 
-    :class='{"outline-black": showOutline}' 
-    @click="passToInput($event)" 
-    @drop.prevent="dropFile($event)" 
-    @dragover.prevent
-    @dragenter="showOutline = true" 
-    @dragleave="showOutline = false"
-)
-    input(
-        class="opacity-0 w-0 h-0" 
-        type="file" 
-        :multiple="multiple" 
-        @change="chooseFile($event)"
-    )
-    slot Click to add {{multiple ? "files" : "a file"}} or drag {{multiple ? "them" : "it"}} here.
-    p(class="absolute bottom-0 w-100 text-center mx-auto" v-if="files.length > 0") {{files.length}} file{{files.length > 1 ? "s" : ""}} uploaded.
+form(:id="id" class="dropzone block w-12")
+    
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType, ref, watch } from "vue"
-
+import Dropzone from "dropzone"
 export default defineComponent({
     name: "FileDrop",
     props: {
@@ -32,8 +17,16 @@ export default defineComponent({
             type: Boolean,
             default: false,
         },
+        id: {
+            type: String,
+            default: "fileDrop",
+        },
     },
     setup(props, context) {
+        Dropzone.options[props.id] = {
+            previewTemplate: "",
+            previewsContainer: "",
+        }
         const values = ref<File[]>([])
         const showOutline = ref(false)
         watch(
