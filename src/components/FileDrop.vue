@@ -1,21 +1,27 @@
 <template lang="pug">
-div(
-    class="cursor-pointer rounded relative" 
-    :class='{"outline-black": showOutline}' 
-    @click="passToInput($event)" 
-    @drop.prevent="dropFile($event)" 
-    @dragover.prevent
-    @dragenter="showOutline = true" 
-    @dragleave="showOutline = false"
-)
-    input(
-        class="opacity-0 w-0 h-0" 
-        type="file" 
-        :multiple="multiple" 
-        @change="chooseFile($event)"
+div()
+    div(
+        class="cursor-pointer rounded relative" 
+        :class='{"outline-black": showOutline}' 
+        @click="passToInput($event)" 
+        @drop.prevent="dropFile($event)" 
+        @dragover.prevent
+        @dragenter="showOutline = true" 
+        @dragleave="showOutline = false"
     )
-    slot Click to add {{multiple ? "files" : "a file"}} or drag {{multiple ? "them" : "it"}} here.
-    p(class="absolute bottom-0 w-100 text-center mx-auto" v-if="files.length > 0") {{files.length}} file{{files.length > 1 ? "s" : ""}} uploaded.
+        input(
+            class="opacity-0 w-0 h-0" 
+            type="file" 
+            :multiple="multiple" 
+            @change="chooseFile($event)"
+        )
+        slot Click to add {{multiple ? "files" : "a file"}} or drag {{multiple ? "them" : "it"}} here.
+        p(class="absolute bottom-0 w-100 text-center mx-auto" v-if="files.length > 0") {{files.length}} file{{files.length > 1 ? "s" : ""}} uploaded.
+
+    router-link(class="mx-2" to="/admin/update") Sync Database with MIKE Data
+    )
+)
+
 </template>
 
 <script lang="ts">
