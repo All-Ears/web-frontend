@@ -24,6 +24,7 @@ div(class="p-5 text-center grid grid-cols-2")
 import { defineComponent, ref } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import FileDrop from "@/components/FileDrop.vue"
+import Router from "@/router"
 import { ProcessState } from "@/models"
 import Axios from "axios"
 
@@ -41,8 +42,12 @@ export default defineComponent({
                 .then(() => {
                     mikeUpdateState.value = "done"
                 })
-                .catch(() => {
-                    mikeUpdateState.value = "failed"
+                .catch((err) => {
+                    if (err.status == 401) {
+                        Router.push("login")
+                    } else {
+                        mikeUpdateState.value = "failed"
+                    }
                 })
         }
 
@@ -57,8 +62,12 @@ export default defineComponent({
                     .then(() => {
                         fileSubmissionState.value = "done"
                     })
-                    .catch(() => {
-                        fileSubmissionState.value = "failed"
+                    .catch((err) => {
+                        if (err.status == 401) {
+                            Router.push("login")
+                        } else {
+                            fileSubmissionState.value = "failed"
+                        }
                     })
             }
         }
