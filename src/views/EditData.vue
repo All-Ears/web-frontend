@@ -1,6 +1,6 @@
 <template lang="pug">
 div(class="p-4")
-    loading-spinner(class="m-auto" :class='{"hidden": loadState !== "loading"}')
+    font-awesome-icon(class="block mx-auto h-40 animate-spin" icon="spinner" :class='{"hidden": loadState !== "waiting"}' size="3x")
     p(class="text-center" :class='{"hidden": loadState !== "failed"}') Records could not be loaded
     mike-record-table(:class='{"hidden": loadState !== "done"}' v-model:records="records")
     div(class="h-20")
@@ -17,19 +17,16 @@ div(class="p-4")
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue"
 import MikeRecordTable from "@/components/MikeRecordTable.vue"
-import LoadingSpinner from "@/components/LoadingSpinner.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { MikeRecord } from "@/models"
+import { MikeRecord, ProcessState } from "@/models"
 import Axios, { AxiosResponse } from "axios"
 import Router from "@/router"
 
-type LoadState = "loading" | "done" | "failed"
-
 export default defineComponent({
     name: "EditData",
-    components: { MikeRecordTable, FontAwesomeIcon, LoadingSpinner },
+    components: { MikeRecordTable, FontAwesomeIcon },
     setup() {
-        const loadState = ref<LoadState>("loading")
+        const loadState = ref<ProcessState>("waiting")
         const records = ref<MikeRecord[]>([])
         const addedRecords = ref<MikeRecord[]>([])
         const changedRecords = ref<MikeRecord[]>([])

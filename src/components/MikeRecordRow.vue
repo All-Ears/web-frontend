@@ -20,9 +20,9 @@ tr(class="border-b")
     td(class="border-b bg-white py-3 px-0.5 w-18")
         input(type="number" class="w-16 bg-gray-100 rounded px-1" v-model='value.year')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.totalNumberOfCarcasses')
+        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.carcasses')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.numberOfIllegalCarcasses')
+        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.illegalCarcasses')
 </template>
 
 <script lang="ts">
