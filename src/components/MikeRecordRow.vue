@@ -4,25 +4,25 @@ tr(class="border-b")
         button(@click='requestRemoval' class="text-red-500 w-5")
             font-awesome-icon(icon='times-circle')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.unRegion')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.unRegion')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.subregionName')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.subregionName')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.subregionId')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.subregionId')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.countryName')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.countryName')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.countryCode')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.countryCode')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.mikeSiteName')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.mikeSiteName')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model='value.mikeSiteId')
+        input(type='text'  class="w-28 bg-gray-100 rounded px-1" v-model.trim='value.mikeSiteId')
     td(class="border-b bg-white py-3 px-0.5 w-18")
-        input(type="number" class="w-16 bg-gray-100 rounded px-1" v-model='value.year')
+        input(type="number" class="w-16 bg-gray-100 rounded px-1" v-model.number='value.year')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.totalNumberOfCarcasses')
+        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model.number='value.carcasses')
     td(class="border-b bg-white py-3 px-0.5")
-        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model='value.numberOfIllegalCarcasses')
+        input(type="number" class="w-28 bg-gray-100 rounded px-1" v-model.number='value.illegalCarcasses')
 </template>
 
 <script lang="ts">
@@ -39,7 +39,7 @@ export default defineComponent({
         },
     },
     setup(props, context) {
-        const value = ref({ ...props.record })
+        const value = ref<MikeRecord>({ ...props.record })
 
         watch(
             () => props.record,
