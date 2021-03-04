@@ -60,7 +60,6 @@ export default defineComponent({
         )
 
         function isFileValid(file: File): boolean {
-            console.log(`${file.name}: ${file.type}`)
             return validFileTypes.some((x) => file.name.endsWith(x))
         }
 
@@ -85,7 +84,6 @@ export default defineComponent({
         }
 
         function addFileIfValid(file: File) {
-            console.log(`${file.name}: ${file.type}`)
             if (validFileTypes.some((x) => file.name.endsWith(x))) {
                 values.value.push(file)
             }
@@ -104,7 +102,6 @@ export default defineComponent({
                     addFileIfValid(files[0])
                 }
             }
-            console.log(values.value)
         }
 
         function handleDrop(e: DragEvent) {
