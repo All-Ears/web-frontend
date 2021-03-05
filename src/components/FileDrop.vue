@@ -1,27 +1,22 @@
 <template lang="pug">
-div()
-    div(
-        class="cursor-pointer rounded relative" 
-        :class='{"outline-black": showOutline}' 
-        @click="passToInput($event)" 
-        @drop.prevent="dropFile($event)" 
-        @dragover.prevent
-        @dragenter="showOutline = true" 
-        @dragleave="showOutline = false"
-    )
-        input(
-            class="opacity-0 w-0 h-0" 
-            type="file" 
-            :multiple="multiple" 
-            @change="chooseFile($event)"
-        )
-        slot Click to add {{multiple ? "files" : "a file"}} or drag {{multiple ? "them" : "it"}} here.
-        p(class="absolute bottom-0 w-100 text-center mx-auto" v-if="files.length > 0") {{files.length}} file{{files.length > 1 ? "s" : ""}} uploaded.
-
-    router-link(class="mx-2" to="/admin/update") Sync Database with MIKE Data
-    )
+div(
+    class="cursor-copy p-0"
+    :class="{'bg-green-200': lightUp}"
+    @dragenter.prevent.stop
+    @dragover.prevent.stop
+    @dragenter="lightUp = true"
+    @dragleave="lightUp = false"
+    @drop.prevent="handleDrop($event)" 
 )
-
+    label(:for="id" class="block min-h-full min-w-full text-center") {{values.length}} file(s) uploaded
+    input(
+        :id="id"
+        class="hidden"
+        :multiple="multiple" 
+        type="file" 
+        :accept="accept"
+        @change="handleChange($event)"
+        )
 </template>
 
 <script lang="ts">
@@ -38,16 +33,24 @@ export default defineComponent({
             type: Boolean,
             default: false,
         },
+        accept: {
+            type: String,
+            default: "*",
+        },
+        id: {
+            type: String,
+            default: "file-drop",
+        },
     },
     setup(props, context) {
         const values = ref<File[]>([])
-        const showOutline = ref(false)
+        const validFileTypes = props.accept.split(",")
+        const lightUp = ref<boolean>(false)
         watch(
             () => props.files,
             (val) => (values.value = val),
             { deep: true }
         )
-
         watch(
             values,
             (val) => {
@@ -56,28 +59,68 @@ export default defineComponent({
             { deep: true }
         )
 
-        function updateFiles(fileList: FileList | null | undefined) {
-            values.value = fileList ? [...fileList] : ([] as File[])
+        function isFileValid(file: File): boolean {
+            return validFileTypes.some((x) => file.name.endsWith(x))
         }
-        function dropFile(event: DragEvent) {
-            showOutline.value = false
-            updateFiles(event.dataTransfer?.files)
+
+        function filterFiles(fileList: FileList | null | undefined): File[] {
+            const files = [] as File[]
+            let file
+            if (fileList && fileList.length > 0) {
+                if (props.multiple) {
+                    for (file of fileList) {
+                        if (isFileValid(file)) {
+                            files.push(file)
+                        }
+                    }
+                } else {
+                    file = fileList[0]
+                    if (isFileValid(file)) {
+                        files.push(file)
+                    }
+                }
+            }
+            return files
         }
-        function chooseFile(event: Event) {
-            updateFiles((event.currentTarget as HTMLInputElement).files)
+
+        function addFileIfValid(file: File) {
+            if (validFileTypes.some((x) => file.name.endsWith(x))) {
+                values.value.push(file)
+            }
         }
-        function passToInput(event: Event) {
-            console.log(event.currentTarget)
-            const target = event.currentTarget as HTMLDivElement
-            target.firstChild?.dispatchEvent(new MouseEvent("click"))
+
+        function updateFiles(files: FileList | null | undefined) {
+            if (files) {
+                if (props.multiple) {
+                    for (const file of files) {
+                        addFileIfValid(file)
+                    }
+                } else {
+                    if (values.value.length === 1 && files.length > 0) {
+                        values.value.pop()
+                    }
+                    addFileIfValid(files[0])
+                }
+            }
+        }
+
+        function handleDrop(e: DragEvent) {
+            lightUp.value = false
+            const validFiles = filterFiles(e?.dataTransfer?.files)
+            values.value = validFiles
+            updateFiles(e.dataTransfer?.files)
+        }
+
+        function handleChange(e: InputEvent) {
+            updateFiles((e.target as HTMLInputElement)?.files)
         }
 
         return {
             values,
-            dropFile,
-            chooseFile,
-            passToInput,
-            showOutline,
+            handleChange,
+            handleDrop,
+            addFileIfValid,
+            lightUp,
         }
     },
 })

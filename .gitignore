@@ -4,6 +4,10 @@
 # Mac stuff
 .DS_Store
 
+# Editor Files
+.idea/
+.vscode/
+
 # Logs
 logs
 *.log

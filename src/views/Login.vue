@@ -2,7 +2,7 @@
 div(class="p-5 text-center")
     div(class="inline-block")
         h1(class="text-xl font-bold mx-5") Login
-        form(class="pwd-box bg-gray-200 rounded m-5 inline-block" @submit.prevent="submitPassword(pwd)")
+        form(class="bg-gray-200 rounded m-5 inline-block" @submit.prevent="submitPassword(pwd)")
             label(for="password" class="m-2") Password:
             input(id="password" class="m-2 rounded p-1" :class="pwdInvalid ? 'border-red-500 border-2' : ''" type="password" v-model="pwd")
             button(class="m-2 rounded bg-green-300 px-2 py-1" type="submit") Submit
