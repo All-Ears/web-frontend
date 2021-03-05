@@ -5,6 +5,7 @@ import {
     RouteMeta,
 } from "vue-router"
 import EditData from "@/views/EditData.vue"
+import ElephantMapPage from "@/views/ElephantMapPage.vue"
 import UploadData from "@/views/UploadData.vue"
 import Login from "@/views/Login.vue"
 import Home from "@/views/Home.vue"
@@ -31,6 +32,11 @@ const routes: Array<RouteRecordRaw> = [
         name: "Login",
         component: Login,
     },
+    {
+        path: "/elephantmap",
+        name: "ElephantMap",
+        component: ElephantMapPage,
+    }
 ]
 
 const router = createRouter({
