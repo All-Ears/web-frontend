@@ -18,9 +18,7 @@ import Router from "@/router"
 // it expires if the user is still on the page
 window.setTimeout(() => {
     if (isLoggedIn()) {
-        renewSession().catch((err) => {
-            console.error("From renew session ", err)
-        })
+        renewSession()
     }
     // 30 minutes in milliseconds
 }, 1000 * 60 * 30)
