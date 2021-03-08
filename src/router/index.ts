@@ -36,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
         path: "/elephantmap",
         name: "ElephantMap",
         component: ElephantMapPage,
-    }
+    },
 ]
 
 const router = createRouter({
