@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full w-full">
+    <div class="h-full w-full p-5">
         <div id="map" class="h-full w-full border rounded mx-auto">
             <font-awesome-icon
                 v-if="mapDataState === 'waiting'"
@@ -10,7 +10,7 @@
         </div>
 
         <div
-            v-show="false"
+            v-show="selectedCountry"
             id="graph"
             class="h-full w-full rounded mx-auto"
         ></div>
@@ -21,20 +21,84 @@
 import { defineComponent, onMounted, ref } from "vue"
 import {
     Maps,
-    Legend,
+    Legend as MapLegend,
     DataLabel,
     Selection,
-    Zoom,
     MapsTooltip,
+    IShapeSelectedEventArgs,
 } from "@syncfusion/ej2-maps"
+import {
+    Chart,
+    Legend as ChartLegend,
+    LineSeries,
+} from "@syncfusion/ej2-charts"
 import Axios from "axios"
-import { isArray, map, reduce } from "lodash"
+import { filter, isArray, map, reduce } from "lodash"
 import { CountryRecord, ProcessState } from "@/models"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+
+interface ChartRecord {
+    countryName: string
+    poachingRatio: number
+    year: number
+}
 
 interface MapRecord {
     countryName: string
     poachingRatio: number
+}
+
+async function loadAfricaShapes(): Promise<object> {
+    return (await Axios.get("/africa.geojson")).data
+}
+
+async function loadPoachingData(): Promise<CountryRecord[]> {
+    const res = (await Axios.get("/api/countryrecords")).data
+    if (isArray(res)) {
+        return res as CountryRecord[]
+    } else {
+        throw new Error()
+    }
+}
+
+function mapDataFromPoachingData(poachingData: CountryRecord[]): MapRecord[] {
+    return map<Record<string, CountryRecord>, MapRecord>(
+        reduce<CountryRecord, Record<string, CountryRecord>>(
+            poachingData,
+            (aggr, x) => {
+                if (aggr[x.countryName]) {
+                    aggr[x.countryName].carcasses += x.carcasses
+                    aggr[x.countryName].illegalCarcasses += x.illegalCarcasses
+                } else {
+                    aggr[x.countryName] = x
+                }
+                return aggr
+            },
+            {}
+        ),
+        ({ countryName, carcasses, illegalCarcasses }) => {
+            return {
+                countryName,
+                poachingRatio: 100 * (illegalCarcasses / carcasses),
+            }
+        }
+    )
+}
+
+function chartDatafromPoachingData(
+    poachingData: CountryRecord[],
+    countryName: string
+): ChartRecord[] {
+    return map<CountryRecord, ChartRecord>(
+        filter(poachingData, (x) => x.countryName === countryName),
+        ({ countryName, carcasses, illegalCarcasses, year }) => {
+            return {
+                countryName,
+                year,
+                poachingRatio: 100 * (illegalCarcasses / carcasses),
+            }
+        }
+    )
 }
 
 export default defineComponent({
@@ -43,47 +107,53 @@ export default defineComponent({
     setup() {
         const graphShowing = ref<boolean>(false)
         const mapDataState = ref<ProcessState>("not started")
-        let mapData: MapRecord[] = []
-        let poachingData: CountryRecord[] = []
+        const mapData: MapRecord[] = []
+        const poachingData: CountryRecord[] = []
         const selectedCountry = ref<string>("")
         let elephantMap: Maps | null = null
+        let elephantChart: Chart | null = null
+        Maps.Inject(DataLabel, MapLegend, Selection, MapsTooltip)
+        Chart.Inject(LineSeries, ChartLegend)
 
-        async function loadPoachingData() {
-            poachingData = (await Axios.get("/api/countryrecords"))
-                .data as CountryRecord[]
-            if (!isArray(poachingData)) {
-                throw new Error()
-            }
-            mapData = map<Record<string, CountryRecord>, MapRecord>(
-                reduce<CountryRecord, Record<string, CountryRecord>>(
-                    poachingData,
-                    (aggr, x) => {
-                        if (aggr[x.countryName]) {
-                            aggr[x.countryName].carcasses += x.carcasses
-                            aggr[x.countryName].illegalCarcasses +=
-                                x.illegalCarcasses
-                        } else {
-                            aggr[x.countryName] = x
-                        }
-                        return aggr
+        function initChart(data: ChartRecord[]) {
+            elephantChart = new Chart({
+                title: `${selectedCountry.value} Poaching Ratios Over Time`,
+                primaryXAxis: { name: "time", valueType: "Double" },
+                primaryYAxis: { name: "deathRatio", valueType: "Double" },
+                series: [
+                    {
+                        dataSource: data,
+                        xName: "year",
+                        yName: "poachingRatio",
+                        type: "Line",
+                        xAxisName: "time",
+                        yAxisName: "deathRatio",
                     },
-                    {}
-                ),
-                ({ countryName, carcasses, illegalCarcasses }) => {
-                    return {
-                        countryName,
-                        poachingRatio: 100 * (illegalCarcasses / carcasses),
-                    }
-                }
-            )
+                ],
+            })
+            elephantChart.appendTo("#graph")
         }
-        onMounted(async () => {
+
+        function handleCountrySelection(
+            shape: IShapeSelectedEventArgs | undefined
+        ) {
+            const data = shape?.data
+            if (data) {
+                selectedCountry.value = (data as CountryRecord).countryName
+                initChart(
+                    chartDatafromPoachingData(
+                        poachingData,
+                        selectedCountry.value
+                    )
+                )
+            }
+        }
+
+        async function initMap() {
             mapDataState.value = "waiting"
-            const africaMap = (await Axios.get("/africa.geojson")).data
-
-            await loadPoachingData()
-
-            Maps.Inject(DataLabel, Legend, Zoom, Selection, MapsTooltip)
+            const africaShapes = await loadAfricaShapes()
+            poachingData.push(...(await loadPoachingData()))
+            mapData.push(...mapDataFromPoachingData(poachingData))
             elephantMap = new Maps({
                 layers: [
                     {
@@ -91,7 +161,7 @@ export default defineComponent({
                             enable: true,
                             border: { color: "#B3E5FC", width: 3 },
                         },
-                        shapeData: africaMap,
+                        shapeData: africaShapes,
                         shapeDataPath: "countryName",
                         shapePropertyPath: "name",
                         dataSource: mapData,
@@ -131,21 +201,13 @@ export default defineComponent({
                     visible: true,
                     position: "Top",
                 },
-                zoomSettings: {
-                    enable: true,
-                    enablePanning: true,
-                },
             })
-            elephantMap.shapeSelected = (elem) => {
-                const data = elem?.data as MapRecord
-                if (data) {
-                    selectedCountry.value = data.countryName
-                }
-            }
+            elephantMap.shapeSelected = handleCountrySelection
             mapDataState.value = "done"
 
             elephantMap.appendTo("#map")
-        })
+        }
+        onMounted(initMap)
 
         return { graphShowing, mapDataState, selectedCountry }
     },
