@@ -30,6 +30,7 @@ import {
 import {
     Chart,
     Legend as ChartLegend,
+    Category,
     LineSeries,
 } from "@syncfusion/ej2-charts"
 import Axios from "axios"
@@ -85,22 +86,6 @@ function mapDataFromPoachingData(poachingData: CountryRecord[]): MapRecord[] {
     )
 }
 
-function chartDatafromPoachingData(
-    poachingData: CountryRecord[],
-    countryName: string
-): ChartRecord[] {
-    return map<CountryRecord, ChartRecord>(
-        filter(poachingData, (x) => x.countryName === countryName),
-        ({ countryName, carcasses, illegalCarcasses, year }) => {
-            return {
-                countryName,
-                year,
-                poachingRatio: 100 * (illegalCarcasses / carcasses),
-            }
-        }
-    )
-}
-
 export default defineComponent({
     name: "ElephantMapPage",
     components: { FontAwesomeIcon },
@@ -113,21 +98,21 @@ export default defineComponent({
         let elephantMap: Maps | null = null
         let elephantChart: Chart | null = null
         Maps.Inject(DataLabel, MapLegend, Selection, MapsTooltip)
-        Chart.Inject(LineSeries, ChartLegend)
+        Chart.Inject(Category, LineSeries, ChartLegend)
 
-        function initChart(data: ChartRecord[]) {
+        function initChart(data: CountryRecord[]) {
             elephantChart = new Chart({
-                title: `${selectedCountry.value} Poaching Ratios Over Time`,
-                primaryXAxis: { name: "time", valueType: "Double" },
-                primaryYAxis: { name: "deathRatio", valueType: "Double" },
+                title: `${selectedCountry.value} Poaching Numbers Over Time`,
+                primaryXAxis: { name: "years", valueType: "Category" },
+                primaryYAxis: { name: "deathsPerYear", valueType: "Double" },
                 series: [
                     {
                         dataSource: data,
                         xName: "year",
-                        yName: "poachingRatio",
+                        yName: "illegalCarcasses",
                         type: "Line",
-                        xAxisName: "time",
-                        yAxisName: "deathRatio",
+                        xAxisName: "years",
+                        yAxisName: "deathsPerYear",
                     },
                 ],
             })
@@ -141,9 +126,9 @@ export default defineComponent({
             if (data) {
                 selectedCountry.value = (data as CountryRecord).countryName
                 initChart(
-                    chartDatafromPoachingData(
+                    filter(
                         poachingData,
-                        selectedCountry.value
+                        (x) => x.countryName === selectedCountry.value
                     )
                 )
             }
