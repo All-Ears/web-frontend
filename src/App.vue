@@ -3,7 +3,10 @@ nav(id="nav" class="flex flex-row justify-between bg-gray-200 p-3")
     div(class="flex flex-row justify-around")
         router-link(class="mx-2" to="/") 
             h1(class="font-bold") All Ears
+        router-link(class="mx-2" to="/about") About
         router-link(class="mx-2" to="/elephantmap") Elephant Map
+        router-link(class="mx-2" to="/carboncalculator") Carbon Calculator
+        router-link(class="mx-2" to="/donate") Donate
         template(v-if="loggedIn")
             router-link(class="mx-2" to="/admin/edit") Edit Records
             router-link(class="mx-2" to="/admin/upload") Upload Records
