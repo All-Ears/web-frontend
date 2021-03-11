@@ -30,23 +30,13 @@ import {
 import {
     Chart,
     Legend as ChartLegend,
+    Category,
     LineSeries,
 } from "@syncfusion/ej2-charts"
 import Axios from "axios"
-import { filter, isArray, map, reduce } from "lodash"
+import { filter, flatMap, groupBy, isArray, map, max, maxBy } from "lodash"
 import { CountryRecord, ProcessState } from "@/models"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-
-interface ChartRecord {
-    countryName: string
-    poachingRatio: number
-    year: number
-}
-
-interface MapRecord {
-    countryName: string
-    poachingRatio: number
-}
 
 async function loadAfricaShapes(): Promise<object> {
     return (await Axios.get("/africa.geojson")).data
@@ -61,44 +51,11 @@ async function loadPoachingData(): Promise<CountryRecord[]> {
     }
 }
 
-function mapDataFromPoachingData(poachingData: CountryRecord[]): MapRecord[] {
-    return map<Record<string, CountryRecord>, MapRecord>(
-        reduce<CountryRecord, Record<string, CountryRecord>>(
-            poachingData,
-            (aggr, x) => {
-                if (aggr[x.countryName]) {
-                    aggr[x.countryName].carcasses += x.carcasses
-                    aggr[x.countryName].illegalCarcasses += x.illegalCarcasses
-                } else {
-                    aggr[x.countryName] = x
-                }
-                return aggr
-            },
-            {}
-        ),
-        ({ countryName, carcasses, illegalCarcasses }) => {
-            return {
-                countryName,
-                poachingRatio: 100 * (illegalCarcasses / carcasses),
-            }
-        }
-    )
-}
-
-function chartDatafromPoachingData(
-    poachingData: CountryRecord[],
-    countryName: string
-): ChartRecord[] {
-    return map<CountryRecord, ChartRecord>(
-        filter(poachingData, (x) => x.countryName === countryName),
-        ({ countryName, carcasses, illegalCarcasses, year }) => {
-            return {
-                countryName,
-                year,
-                poachingRatio: 100 * (illegalCarcasses / carcasses),
-            }
-        }
-    )
+function getLatestDataPerCountry(
+    poachingData: CountryRecord[]
+): CountryRecord[] {
+    const countries = Object.values(groupBy(poachingData, (x) => x.countryName))
+    return flatMap(countries, (x) => maxBy(x, (y) => y.year) || x[0])
 }
 
 export default defineComponent({
@@ -107,27 +64,27 @@ export default defineComponent({
     setup() {
         const graphShowing = ref<boolean>(false)
         const mapDataState = ref<ProcessState>("not started")
-        const mapData: MapRecord[] = []
+        const mapData: CountryRecord[] = []
         const poachingData: CountryRecord[] = []
         const selectedCountry = ref<string>("")
         let elephantMap: Maps | null = null
         let elephantChart: Chart | null = null
         Maps.Inject(DataLabel, MapLegend, Selection, MapsTooltip)
-        Chart.Inject(LineSeries, ChartLegend)
+        Chart.Inject(Category, LineSeries, ChartLegend)
 
-        function initChart(data: ChartRecord[]) {
+        function initChart(data: CountryRecord[]) {
             elephantChart = new Chart({
-                title: `${selectedCountry.value} Poaching Ratios Over Time`,
-                primaryXAxis: { name: "time", valueType: "Double" },
-                primaryYAxis: { name: "deathRatio", valueType: "Double" },
+                title: `${selectedCountry.value} Poaching Numbers Over Time`,
+                primaryXAxis: { name: "years", valueType: "Category" },
+                primaryYAxis: { name: "deathsPerYear", valueType: "Double" },
                 series: [
                     {
                         dataSource: data,
                         xName: "year",
-                        yName: "poachingRatio",
+                        yName: "illegalCarcasses",
                         type: "Line",
-                        xAxisName: "time",
-                        yAxisName: "deathRatio",
+                        xAxisName: "years",
+                        yAxisName: "deathsPerYear",
                     },
                 ],
             })
@@ -141,9 +98,9 @@ export default defineComponent({
             if (data) {
                 selectedCountry.value = (data as CountryRecord).countryName
                 initChart(
-                    chartDatafromPoachingData(
+                    filter(
                         poachingData,
-                        selectedCountry.value
+                        (x) => x.countryName === selectedCountry.value
                     )
                 )
             }
@@ -153,7 +110,9 @@ export default defineComponent({
             mapDataState.value = "waiting"
             const africaShapes = await loadAfricaShapes()
             poachingData.push(...(await loadPoachingData()))
-            mapData.push(...mapDataFromPoachingData(poachingData))
+            mapData.push(...getLatestDataPerCountry(poachingData))
+            const maxPoaching =
+                max(map(mapData, (x) => x.illegalCarcasses)) || 1
             elephantMap = new Maps({
                 layers: [
                     {
@@ -175,20 +134,20 @@ export default defineComponent({
                             valuePath: "name",
                         },
                         shapeSettings: {
-                            colorValuePath: "poachingRatio",
+                            colorValuePath: "illegalCarcasses",
                             border: { color: "#FFFFFF", width: 1 },
                             fill: "#EEEEEE",
                             colorMapping: [
                                 {
                                     from: 0,
-                                    to: 50,
+                                    to: Math.floor(maxPoaching * 0.1),
                                     color: "#4CAF50", // Like Flutter's colors.red
                                     minOpacity: 0.8,
                                     maxOpacity: 0.2,
                                 },
                                 {
-                                    from: 51,
-                                    to: 100,
+                                    from: Math.floor(maxPoaching * 0.1) + 1,
+                                    to: maxPoaching,
                                     color: "#F44336", // Like Flutter's colors.green
                                     minOpacity: 0.2,
                                     maxOpacity: 0.8,

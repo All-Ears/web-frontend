@@ -30,7 +30,7 @@ export async function login(pwd: string) {
 }
 
 export async function renewSession() {
-    const res = await Axios.get("/api/refreshtoken")
+    const res = await Axios.get("/api/login")
     updateLoginState(res.data.token)
 }
 
