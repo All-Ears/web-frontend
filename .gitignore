@@ -1,6 +1,9 @@
 # Mock data
 *mock.json
 
+# File storing API keys
+config.ts
+
 # Mac stuff
 .DS_Store
 
