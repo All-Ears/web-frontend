@@ -7,6 +7,7 @@
             v-model="searchText"
             @focus="inFocus = true"
             @blur="inFocus = false"
+            @change.stop
         />
         <div class="relative w-full">
             <div
@@ -20,7 +21,7 @@
                     @mousedown.prevent
                     @mouseup="updateChoice(option)"
                 >
-                    {{ option }}
+                    {{ option.display }}
                 </div>
             </div>
         </div>
@@ -30,17 +31,22 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, watch } from "vue"
 
+export interface SelectOption {
+    value: any
+    display: string
+}
+
 export default defineComponent({
     name: "DropdownSearch",
     props: {
         options: {
-            type: Object as PropType<string[]>,
+            type: Array as PropType<SelectOption[]>,
             default: [] as string[],
         },
 
-        selectedOption: {
-            type: String as PropType<string>,
-            default: "",
+        modelValue: {
+            type: Object as PropType<any | null>,
+            default: null,
         },
         maxVisibleOptions: {
             type: Number,
@@ -48,35 +54,38 @@ export default defineComponent({
         },
     },
     setup(props, context) {
-        const value = ref<string>("")
+        const chosenOption = ref<SelectOption | null>(null)
         const searchText = ref<string>("")
         const inputElement = ref<HTMLInputElement | null>(null)
         const displayedOptions = computed(() =>
             props.options
-                .filter((option) => {
-                    return option.includes(searchText.value)
+                .filter(({ display }) => {
+                    return display
+                        .toLowerCase()
+                        .includes(searchText.value.toLowerCase())
                 })
                 .slice(0, props.maxVisibleOptions)
         )
         const inFocus = ref<boolean>(false)
         watch(
-            () => props.selectedOption,
+            () => props.modelValue,
             (val) => {
-                value.value = val
+                chosenOption.value = val
             }
         )
-        watch(value, (val) => {
-            context.emit("update:selectedOption", val)
+        watch(chosenOption, (val) => {
+            context.emit("update:modelValue", val)
+            context.emit("change", val)
         })
 
-        function updateChoice(option: string) {
-            value.value = option
-            searchText.value = option
+        function updateChoice(option: SelectOption) {
+            chosenOption.value = option.value
+            searchText.value = option.display
             inputElement.value?.blur()
         }
 
         return {
-            value,
+            chosenOption,
             searchText,
             displayedOptions,
             inFocus,
