@@ -1,6 +1,6 @@
 <template>
     <div class="h-full w-full p-5">
-        <div class="lg:w-1/3 md:w-1/2 sm:w-full m-auto">
+        <div class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto">
             <dropdown-search
                 class="p-1"
                 v-model="startAirport"
@@ -20,8 +20,11 @@
                 </button>
             </div>
         </div>
-
-        <div id="map" class="w-full h-4/5"></div>
+        <div id="map" class="w-full h-2/3 border rounded mx-auto"></div>
+        <div v-if="totalDistance" class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto">
+            <p>Flight distance: {{ totalDistance }} kilometers</p>
+            <p>Carbon emmitted: {{ totalCarbon }} grams of carbon</p>
+        </div>
     </div>
 </template>
 
@@ -56,6 +59,22 @@ async function getLatLong(airport: AirportInfo): Promise<GeoCoords> {
     return { latitude: res.latitude, longitude: res.longitude }
 }
 
+function calculateDistance(pointA: GeoCoords, pointB: GeoCoords) {
+    let p = 0.017453292519943295
+    let a =
+        0.5 -
+        Math.cos((pointB.latitude - pointA.latitude) * p) / 2 +
+        (Math.cos(pointA.latitude * p) *
+            Math.cos(pointB.latitude * p) *
+            (1 - Math.cos((pointB.longitude - pointA.longitude) * p))) /
+            2
+    return Math.round(12742 * Math.asin(Math.sqrt(a)))
+}
+
+function calculateCarbonEmmission(distance: number) {
+    return Math.round(distance * (12 / 44) * 101)
+}
+
 export default defineComponent({
     name: "CarbonCalculator",
     components: { DropdownSearch },
@@ -72,7 +91,6 @@ export default defineComponent({
                 }
             })
         })
-
         const maps = new Maps({
             zoomSettings: {
                 enable: true,
@@ -88,6 +106,23 @@ export default defineComponent({
                 },
             ],
         })
+        const totalDistance = ref(0)
+        const totalCarbon = ref(0)
+
+        function drawLineOnMap(start: GeoCoords, end: GeoCoords) {
+            maps.layers[0].navigationLineSettings = [
+                {
+                    visible: true,
+                    latitude: [start.latitude, end.latitude],
+                    longitude: [start.longitude, end.longitude],
+                    color: "black",
+                    angle: 0.1,
+                    width: 2,
+                    dashArray: "10",
+                },
+            ]
+            maps.refresh()
+        }
 
         async function handleSubmit() {
             if (startAirport.value && endAirport.value) {
@@ -95,19 +130,11 @@ export default defineComponent({
                     getLatLong(startAirport.value),
                     getLatLong(endAirport.value),
                 ])
-
-                maps.layers[0].navigationLineSettings = [
-                    {
-                        visible: true,
-                        latitude: [startCoords.latitude, endCoords.latitude],
-                        longitude: [startCoords.longitude, endCoords.longitude],
-                        color: "black",
-                        angle: 0.1,
-                        width: 2,
-                        dashArray: "4",
-                    },
-                ]
-                maps.refresh()
+                drawLineOnMap(startCoords, endCoords)
+                totalDistance.value = calculateDistance(startCoords, endCoords)
+                totalCarbon.value = calculateCarbonEmmission(
+                    totalDistance.value
+                )
             }
         }
 
@@ -116,7 +143,14 @@ export default defineComponent({
             maps.appendTo("#map")
         })
 
-        return { airportOptions, startAirport, endAirport, handleSubmit }
+        return {
+            airportOptions,
+            startAirport,
+            endAirport,
+            handleSubmit,
+            totalDistance,
+            totalCarbon,
+        }
     },
 })
 </script>
