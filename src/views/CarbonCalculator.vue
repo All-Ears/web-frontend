@@ -1,16 +1,30 @@
 <template>
     <div class="h-full w-full p-5">
         <div class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto">
-            <dropdown-search
-                class="p-1"
-                v-model="startAirport"
-                :options="airportOptions"
-            />
-            <dropdown-search
-                class="p-1"
-                v-model="endAirport"
-                :options="airportOptions"
-            />
+            <h1 class="font-bold text-center text-2xl w-full pb-3">
+                Flight Carbon Calculator
+            </h1>
+            <div class="flex space-x-4 w-full">
+                <label class="flex-1" for="origin">Origin Airport:</label>
+                <dropdown-search
+                    id="origin"
+                    class="p-1 flex-3"
+                    v-model="startAirport"
+                    :options="airportOptions"
+                />
+            </div>
+            <div class="flex space-x-3 w-full">
+                <label class="flex-1" for="destination"
+                    >Destination Airport:</label
+                >
+                <dropdown-search
+                    id="destination"
+                    class="p-1 flex-2"
+                    v-model="endAirport"
+                    :options="airportOptions"
+                />
+            </div>
+
             <div class="p-1">
                 <button
                     class="rounded bg-green-300 px-2 py-1"
@@ -20,10 +34,36 @@
                 </button>
             </div>
         </div>
-        <div id="map" class="w-full h-2/3 border rounded mx-auto"></div>
-        <div v-if="totalDistance" class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto">
-            <p>Flight distance: {{ totalDistance }} kilometers</p>
-            <p>Carbon emmitted: {{ totalCarbon }} grams of carbon</p>
+        <div class="w-full h-2/3 mx-auto p-2">
+            <div id="map" class="h-full w-full border rounded"></div>
+        </div>
+
+        <div
+            v-if="totalDistance"
+            class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto p-2"
+        >
+            <table class="table-auto w-full border-collapse text-left">
+                <tbody class="divide-y">
+                    <tr>
+                        <th class="p-2 border">Flight distance:</th>
+                        <td class="p-2 border">
+                            {{ totalDistance.toLocaleString() }} kilometers
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="p-2 border">Carbon emmitted:</th>
+                        <td class="p-2 border">
+                            {{ totalCarbon.toLocaleString() }} grams of carbon
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="p-2 border">Suggested donation amount:</th>
+                        <td class="p-2 border">
+                            ${{ Math.round(totalCarbon / 1000) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
