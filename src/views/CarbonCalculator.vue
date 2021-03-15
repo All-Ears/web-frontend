@@ -34,13 +34,13 @@
                 </button>
             </div>
         </div>
-        <div class="w-full h-2/3 mx-auto p-2">
+        <div class="w-4/5 h-2/3 mx-auto p-2">
             <div id="map" class="h-full w-full border rounded"></div>
         </div>
 
         <div
             v-if="totalDistance"
-            class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto p-2"
+            class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto p-2 pb-4"
         >
             <table class="table-auto w-full border-collapse text-left">
                 <tbody class="divide-y">
@@ -100,8 +100,8 @@ async function getLatLong(airport: AirportInfo): Promise<GeoCoords> {
 }
 
 function calculateDistance(pointA: GeoCoords, pointB: GeoCoords) {
-    let p = 0.017453292519943295
-    let a =
+    const p = 0.017453292519943295
+    const a =
         0.5 -
         Math.cos((pointB.latitude - pointA.latitude) * p) / 2 +
         (Math.cos(pointA.latitude * p) *

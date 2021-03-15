@@ -140,15 +140,22 @@ export default defineComponent({
                             colorMapping: [
                                 {
                                     from: 0,
-                                    to: Math.floor(maxPoaching * 0.1),
-                                    color: "#4CAF50", // Like Flutter's colors.red
+                                    to: Math.floor(maxPoaching * 0.33),
+                                    color: "#4CAF50", // Like Flutter's colors.green
                                     minOpacity: 0.8,
                                     maxOpacity: 0.2,
                                 },
                                 {
-                                    from: Math.floor(maxPoaching * 0.1) + 1,
+                                    from: Math.floor(maxPoaching * 0.33) + 1,
+                                    to: Math.floor(maxPoaching * 0.66),
+                                    color: "#FF9800", // Like Flutter's colors.orange
+                                    minOpacity: 0.2,
+                                    maxOpacity: 0.8,
+                                },
+                                {
+                                    from: Math.floor(maxPoaching * 0.66) + 1,
                                     to: maxPoaching,
-                                    color: "#F44336", // Like Flutter's colors.green
+                                    color: "#F44336", // Like Flutter's colors.red
                                     minOpacity: 0.2,
                                     maxOpacity: 0.8,
                                 },
