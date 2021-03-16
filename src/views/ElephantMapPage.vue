@@ -22,7 +22,7 @@ import { defineComponent, onMounted, ref } from "vue"
 import {
     Maps,
     Legend as MapLegend,
-    DataLabel,
+    DataLabel as MapDataLabel,
     Selection,
     MapsTooltip,
     IShapeSelectedEventArgs,
@@ -30,6 +30,7 @@ import {
 import {
     Chart,
     Legend as ChartLegend,
+    DataLabel as ChartDataLabel,
     Category,
     LineSeries,
 } from "@syncfusion/ej2-charts"
@@ -69,14 +70,27 @@ export default defineComponent({
         const selectedCountry = ref<string>("")
         let elephantMap: Maps | null = null
         let elephantChart: Chart | null = null
-        Maps.Inject(DataLabel, MapLegend, Selection, MapsTooltip)
-        Chart.Inject(Category, LineSeries, ChartLegend)
+        Maps.Inject(MapDataLabel, MapLegend, Selection, MapsTooltip)
+        Chart.Inject(ChartDataLabel, Category, LineSeries, ChartLegend)
 
         function initChart(data: CountryRecord[]) {
             elephantChart = new Chart({
                 title: `${selectedCountry.value} Poaching Numbers Over Time`,
-                primaryXAxis: { name: "years", valueType: "Category" },
-                primaryYAxis: { name: "deathsPerYear", valueType: "Double" },
+                primaryXAxis: {
+                    name: "years",
+                    valueType: "Category",
+                    labelIntersectAction: "Rotate45",
+                    title: "Years",
+                },
+                primaryYAxis: {
+                    name: "deathsPerYear",
+                    valueType: "Double",
+                    title: "Elephant Poaching Deaths per Year",
+                },
+                legendSettings: {
+                    visible: true,
+                    position: "Bottom",
+                },
                 series: [
                     {
                         dataSource: data,
@@ -85,6 +99,7 @@ export default defineComponent({
                         type: "Line",
                         xAxisName: "years",
                         yAxisName: "deathsPerYear",
+                        name: "Elephant Poaching Deaths per Year",
                     },
                 ],
             })
@@ -103,6 +118,11 @@ export default defineComponent({
                         (x) => x.countryName === selectedCountry.value
                     )
                 )
+                window.setTimeout(() => {
+                    document
+                        .getElementById("graph")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                }, 500)
             }
         }
 
@@ -114,6 +134,9 @@ export default defineComponent({
             const maxPoaching =
                 max(map(mapData, (x) => x.illegalCarcasses)) || 1
             elephantMap = new Maps({
+                titleSettings: {
+                    text: "Latest elephant poaching numbers per country",
+                },
                 layers: [
                     {
                         selectionSettings: {
@@ -144,6 +167,7 @@ export default defineComponent({
                                     color: "#4CAF50", // Like Flutter's colors.green
                                     minOpacity: 0.8,
                                     maxOpacity: 0.2,
+                                    value: "Lowest 33% of countries",
                                 },
                                 {
                                     from: Math.floor(maxPoaching * 0.33) + 1,
@@ -151,6 +175,7 @@ export default defineComponent({
                                     color: "#FF9800", // Like Flutter's colors.orange
                                     minOpacity: 0.2,
                                     maxOpacity: 0.8,
+                                    value: "Mid 33% of countries",
                                 },
                                 {
                                     from: Math.floor(maxPoaching * 0.66) + 1,
@@ -158,6 +183,7 @@ export default defineComponent({
                                     color: "#F44336", // Like Flutter's colors.red
                                     minOpacity: 0.2,
                                     maxOpacity: 0.8,
+                                    value: "Top 34% percentile of countries",
                                 },
                             ],
                         },
