@@ -21,4 +21,15 @@ export function getMikePrimaryKey({ mikeSiteId, year }: MikeRecord) {
     return { mikeSiteId, year }
 }
 
+export interface AirportInfo {
+    city: string
+    location: string
+    iataCode: string
+}
+
+export interface GeoCoords {
+    latitude: number
+    longitude: number
+}
+
 export type ProcessState = "not started" | "waiting" | "done" | "failed"
