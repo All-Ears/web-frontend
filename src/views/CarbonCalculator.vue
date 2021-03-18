@@ -112,7 +112,7 @@ function calculateDistance(pointA: GeoCoords, pointB: GeoCoords) {
 }
 
 function calculateCarbonEmmission(distance: number) {
-    return Math.round(distance * (12 / 44) * 101)
+    return Math.round(distance * (12 / 44) * 0.29) // outputs kg of carbon
 }
 
 export default defineComponent({
