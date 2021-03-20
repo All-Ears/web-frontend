@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { MikeRecord, ProcessState, getMikePrimaryKey } from "@/models"
 import Axios, { AxiosResponse } from "axios"
 import { isArray, filter, differenceWith, isEqual } from "lodash"
-import Router from "@/router"
+import { logout } from "@/auth"
 
 function recordIsValid(record: MikeRecord): boolean {
     return Boolean(
@@ -67,12 +67,8 @@ export default defineComponent({
                     }
                     loadState.value = "done"
                 })
-                .catch((err) => {
-                    if (err.status == 401) {
-                        Router.push("login")
-                    } else {
-                        loadState.value = "failed"
-                    }
+                .catch(() => {
+                    loadState.value = "failed"
                 })
         }
 
@@ -127,8 +123,8 @@ export default defineComponent({
                     loadRecords()
                 })
                 .catch((err) => {
-                    if (err && err.status === 401) {
-                        Router.push("login")
+                    if (err?.response?.status === 401) {
+                        logout()
                     } else {
                         submissionState.value = "failed"
                     }
