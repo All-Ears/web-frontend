@@ -1738,6 +1738,13 @@
     "@types/koa" "*"
     graphql "^15.3.0"
 
+"@types/highcharts@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@types/highcharts/-/highcharts-7.0.0.tgz#88fc2140504dac329eb93d6e06a457c8db0d7f7e"
+  integrity sha512-YDevls0s9uqz6VEbchxp+NEaKssAPq5aDZgqEUpxOIUCQEncQtXxibp1w4lvgKyhM4qDejAcSZ+DKfA/kzqR0A==
+  dependencies:
+    highcharts "*"
+
 "@types/http-assert@*":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@types/http-assert/-/http-assert-1.5.1.tgz#d775e93630c2469c2f980fc27e3143240335db3b"
@@ -7280,6 +7287,11 @@ hex-color-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
+
+highcharts@*, highcharts@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/highcharts/-/highcharts-9.0.1.tgz#49ec994a7897a96fc3e0880f49a0eca34adff6a2"
+  integrity sha512-0UmcCz2RmFuqfT/Igu3h5sGnkeSqqZwfuYrTzJ/htptmJAo5SSxH62NFcTjVRk+3WstoBJmoXR0v5FVGQUzK5A==
 
 highlight.js@^10.0.0:
   version "10.4.1"
@@ -13012,6 +13024,11 @@ vue-eslint-parser@^7.0.0, vue-eslint-parser@^7.2.0:
     espree "^6.2.1"
     esquery "^1.0.1"
     lodash "^4.17.15"
+
+vue-highcharts@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/vue-highcharts/-/vue-highcharts-0.2.0.tgz#93754ba2ee199f3c506200987e1dc74e9adc93d9"
+  integrity sha512-+zXI/ei3KgpVuEreyeTsvLIp092m+03JtTwg6gj7DxtjJqi4LhYvV/rBnUoaXuvqTsiPNwPBPKeyiATL9iM2Gw==
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"

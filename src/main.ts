@@ -3,6 +3,9 @@ import App from "./App.vue"
 import "@/assets/css/main.sass"
 import router from "./router"
 import store from "./store"
+import Highcharts from "highcharts"
+import loadMap from "highcharts/modules/map"
+import VueHighcharts from "vue-highcharts"
 import { library } from "@fortawesome/fontawesome-svg-core"
 import {
     faTimesCircle,
@@ -12,9 +15,11 @@ import {
     faSpinner,
 } from "@fortawesome/free-solid-svg-icons"
 
-library.add(faTimesCircle, faPlus, faSave, faFileCsv, faSpinner)
+loadMap(Highcharts)
 
+library.add(faTimesCircle, faPlus, faSave, faFileCsv, faSpinner)
 createApp(App)
     .use(store)
     .use(router)
+    .use(VueHighcharts, { Highcharts })
     .mount("#app")
