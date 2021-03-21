@@ -53,7 +53,7 @@
                     <tr>
                         <th class="p-2 border">Carbon emmitted:</th>
                         <td class="p-2 border">
-                            {{ totalCarbon.toLocaleString() }} grams of carbon
+                            {{ totalCarbon.toLocaleString() }} kg of carbon
                         </td>
                     </tr>
                     <tr>
@@ -64,6 +64,22 @@
                     </tr>
                 </tbody>
             </table>
+            <p class="p-1">
+                An African forest elephant would cause
+                <strong>{{ ELEPHANT_PER_YEAR_CARBON.toFixed(2) }} kg</strong>
+                of carbon to be sequestered per year by keeping the forests
+                healthy.
+            </p>
+            <p class="p-1">
+                An African forest elephant would need to live for
+                <strong
+                    >{{
+                        (totalCarbon / ELEPHANT_PER_YEAR_CARBON).toFixed(2)
+                    }}
+                    years</strong
+                >
+                to sequester that amount of carbon.
+            </p>
         </div>
     </div>
 </template>
@@ -75,6 +91,8 @@ import { MAPBOX_TOKEN, RAPID_API_KEY } from "@/config"
 import DropdownSearch, { SelectOption } from "@/components/DropdownSearch.vue"
 import { AirportInfo, GeoCoords } from "@/models"
 import Axios from "axios"
+
+const ELEPHANT_PER_YEAR_CARBON = 26000 / 65
 
 async function loadAirports(): Promise<AirportInfo[]> {
     const data = (await Axios.get("/airports.json")).data
@@ -161,6 +179,7 @@ export default defineComponent({
                     dashArray: "10",
                 },
             ]
+            maps.zoomSettings.zoomFactor = 3
             maps.refresh()
         }
 
@@ -190,6 +209,7 @@ export default defineComponent({
             handleSubmit,
             totalDistance,
             totalCarbon,
+            ELEPHANT_PER_YEAR_CARBON,
         }
     },
 })
