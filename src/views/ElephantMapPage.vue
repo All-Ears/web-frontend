@@ -1,25 +1,22 @@
 <template>
-    <div class="h-full w-full p-5">
-        <div id="map" class=" w-full h-full border rounded py-1 px-auto">
-            <template v-if="mapDataState === 'done'">
-                <highmaps :options="mapOptions" />
-            </template>
-            <template v-else-if="mapDataState === 'waiting'">
-                <font-awesome-icon
-                    class="block h-full w-full mx-auto animate-spin"
-                    icon="spinner"
-                    size="3x"
-                ></font-awesome-icon>
-            </template>
+    <div class="h-9/10 w-full py-5 flex flex-row justify-evenly">
+        <div class="border rounded h-full w-9/20">
+            <highmaps
+                v-if="mapDataState === 'done'"
+                :options="mapOptions"
+                class="h-full w-full p-1"
+            />
+            <font-awesome-icon
+                v-else-if="mapDataState === 'waiting'"
+                class="block h-full w-full mx-auto animate-spin"
+                icon="spinner"
+                size="3x"
+            />
         </div>
-
-        <div
-            id="graph-container"
-            v-show="selectedCountryCode"
-            :ref="chartContainer"
-            class="h-full w-full rounded mx-auto"
-        >
-            <highcharts :options="chartOptions" />
+        <div v-if="selectedCountryCode" class="border rounded h-full w-9/20">
+            <div class="h-full w-full p-1 rounded mx-auto">
+                <highcharts :options="chartOptions" />
+            </div>
         </div>
     </div>
 </template>
@@ -47,7 +44,7 @@ async function loadPoachingData(): Promise<CountryRecord[]> {
     if (isArray(res)) {
         return res as CountryRecord[]
     } else {
-        throw new Error()
+        throw new Error("Could not load poaching data")
     }
 }
 
@@ -62,7 +59,7 @@ function getLatestDataPerCountry(poachingData: CountryRecord[]): MapModel[] {
     )
 }
 
-function getMapOptions(
+function generateMapOptions(
     geoJson: object | null,
     data: MapModel[],
     selectedString: Ref<string>,
@@ -71,8 +68,12 @@ function getMapOptions(
     return {
         chart: {
             map: geoJson as Highcharts.GeoJSON,
-            height: 800,
-            width: 1000,
+            spacingTop: 20,
+            spacingBottom: 0,
+            spacingLeft: 0,
+            spacingRight: 0,
+            marginLeft: 10,
+            marginRight: 10,
         },
         title: {
             text: "African Forest Elephant Poaching",
@@ -105,13 +106,12 @@ function getMapOptions(
                     // Select a country and if it
                     click(event) {
                         const model = (event.point as unknown) as MapModel
-                        selectedString.value = model.code
-                        selectedCountryName.value = model.name || ""
-                        window.setTimeout(() => {
-                            document
-                                .getElementById("graph-container")
-                                ?.scrollIntoView({ behavior: "smooth" })
-                        }, 500)
+                        if (selectedString.value === model.code) {
+                            selectedString.value = ""
+                        } else {
+                            selectedString.value = model.code
+                            selectedCountryName.value = model.countryName
+                        }
                     },
                 },
                 name: "Illegal Carcasses",
@@ -137,6 +137,15 @@ function generateChartOptions(
     chartCountryName: string
 ): Highcharts.Options {
     return {
+        chart: {
+            spacingTop: 20,
+            spacingBottom: 0,
+            spacingLeft: 0,
+            spacingRight: 0,
+            marginLeft: 10,
+            marginRight: 10,
+            height: "90%",
+        },
         title: {
             text: `${chartCountryName} Poaching Values Over Time`,
         },
@@ -146,6 +155,12 @@ function generateChartOptions(
             //     x.year.toString()
             // ),
         },
+        tooltip: {
+            followPointer: true,
+            followTouchMove: true,
+            pointFormat:
+                "{point.illegalCarcasses} out of {point.carcasses} forest elephant deaths were poached",
+        },
         series: [
             {
                 type: "line",
@@ -153,6 +168,7 @@ function generateChartOptions(
                 data: poachingData.map((r) => ({
                     x: r.year,
                     y: r.illegalCarcasses,
+                    ...r,
                 })),
             },
         ],
@@ -171,7 +187,6 @@ export default defineComponent({
         const selectedCountryName = ref<string>("")
         const africaMap = ref<object | null>(null)
         const maxPoaching = ref<number>(0)
-        const chartContainer = ref(null)
 
         async function initMap() {
             mapDataState.value = "waiting"
@@ -183,7 +198,7 @@ export default defineComponent({
         }
 
         const mapOptions = computed(() =>
-            getMapOptions(
+            generateMapOptions(
                 africaMap.value,
                 mapData.value,
                 selectedCountryCode,
@@ -208,7 +223,6 @@ export default defineComponent({
             selectedCountryCode,
             mapOptions,
             chartOptions,
-            chartContainer,
         }
     },
 })

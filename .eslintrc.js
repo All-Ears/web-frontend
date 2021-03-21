@@ -16,12 +16,12 @@ module.exports = {
     rules: {
         "no-console":
             process.env.NODE_ENV === "production" ||
-                process.env.NODE_ENV === "staging"
+            process.env.NODE_ENV === "staging"
                 ? "error"
                 : "off",
         "no-debugger":
             process.env.NODE_ENV === "production" ||
-                process.env.NODE_ENV === "staging"
+            process.env.NODE_ENV === "staging"
                 ? "error"
                 : "off",
 
