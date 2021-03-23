@@ -41,7 +41,8 @@ function recordIsValid(record: MikeRecord): boolean {
             record.mikeSiteName &&
             record.year >= 0 &&
             record.carcasses >= 0 &&
-            record.illegalCarcasses >= 0
+            record.illegalCarcasses >= 0 &&
+            record.carcasses >= record.illegalCarcasses
     )
 }
 
