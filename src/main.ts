@@ -1,6 +1,7 @@
 import { createApp } from "vue"
 import App from "./App.vue"
 import "@/assets/css/main.sass"
+import "leaflet/dist/leaflet.css"
 import router from "./router"
 import store from "./store"
 import Highcharts from "highcharts"

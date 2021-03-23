@@ -85,12 +85,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue"
-import { Maps, Zoom, NavigationLine } from "@syncfusion/ej2-maps"
+import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue"
+import "leaflet-curve"
+import L, { Curve, Map } from "leaflet"
+import Axios from "axios"
+import { isEqual } from "lodash"
 import { MAPBOX_TOKEN, RAPID_API_KEY } from "@/config"
 import DropdownSearch, { SelectOption } from "@/components/DropdownSearch.vue"
 import { AirportInfo, GeoCoords } from "@/models"
-import Axios from "axios"
+import { calcVertex } from "@/calc"
 
 const ELEPHANT_PER_YEAR_CARBON = 26000 / 65
 
@@ -137,10 +140,11 @@ export default defineComponent({
     name: "CarbonCalculator",
     components: { DropdownSearch },
     setup() {
-        Maps.Inject(Zoom, NavigationLine)
         const startAirport = ref<AirportInfo | null>(null)
         const endAirport = ref<AirportInfo | null>(null)
         const airportList = ref<AirportInfo[]>([])
+        let map: Map | null = null
+        let flightLine: Curve | null = null
         const airportOptions = computed<SelectOption[]>(() => {
             return airportList.value.map((x) => {
                 return {
@@ -149,42 +153,40 @@ export default defineComponent({
                 }
             })
         })
-        const maps = new Maps({
-            zoomSettings: {
-                enable: true,
-                enablePanning: true,
-                zoomFactor: 3,
-            },
-            layers: [
-                {
-                    layerType: "OSM",
-                    urlTemplate:
-                        "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/level/tileX/tileY?access_token=" +
-                        MAPBOX_TOKEN,
-                },
-            ],
-        })
         const totalDistance = ref(0)
         const totalCarbon = ref(0)
 
         function drawLineOnMap(start: GeoCoords, end: GeoCoords) {
-            maps.layers[0].navigationLineSettings = [
+            if (flightLine) {
+                map?.removeLayer(flightLine)
+            }
+            const vertex = calcVertex(start, end, 0.3)
+            flightLine = L.curve(
+                [
+                    "M",
+                    [start.latitude, start.longitude],
+                    "Q",
+                    [vertex.latitude, vertex.longitude],
+                    [end.latitude, end.longitude],
+                ],
                 {
-                    visible: true,
-                    latitude: [start.latitude, end.latitude],
-                    longitude: [start.longitude, end.longitude],
                     color: "black",
-                    angle: 0.1,
-                    width: 2,
-                    dashArray: "10",
-                },
-            ]
-            maps.zoomSettings.zoomFactor = 3
-            maps.refresh()
+                    dashArray: [8, 4, 2, 4],
+                    weight: 1.5,
+                }
+            )
+            if (map) {
+                flightLine.addTo(map)
+                map.setView([28, 3], 2)
+            }
         }
 
         async function handleSubmit() {
-            if (startAirport.value && endAirport.value) {
+            if (
+                startAirport.value &&
+                endAirport.value &&
+                !isEqual(startAirport.value, endAirport.value)
+            ) {
                 const [startCoords, endCoords] = await Promise.all([
                     getLatLong(startAirport.value),
                     getLatLong(endAirport.value),
@@ -197,10 +199,28 @@ export default defineComponent({
             }
         }
 
-        onMounted(async () => {
-            airportList.value = await loadAirports()
-            maps.appendTo("#map")
+        onMounted(() => {
+            loadAirports().then(
+                (airportInfos) => (airportList.value = airportInfos)
+            )
+            map = L.map("map").setView([28, 3], 2)
+            const mapId = navigator.language.startsWith("fr")
+                ? "all-ears-nau/ckmk4bu1i2vp217og1ytpkz3w"
+                : "mapbox/light-v10"
+
+            L.tileLayer(
+                "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
+                {
+                    maxZoom: 8,
+                    minZoom: 2,
+                    id: mapId,
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: MAPBOX_TOKEN,
+                }
+            ).addTo(map)
         })
+        onUnmounted(() => map?.remove())
 
         return {
             airportOptions,
