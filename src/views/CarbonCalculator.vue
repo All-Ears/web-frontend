@@ -86,8 +86,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted, ref } from "vue"
-import "leaflet-curve"
 import L, { Curve, Map } from "leaflet"
+import "leaflet-curve"
 import Axios from "axios"
 import { isEqual } from "lodash"
 import { MAPBOX_TOKEN, RAPID_API_KEY } from "@/config"
