@@ -53,13 +53,13 @@
                     <tr>
                         <th class="p-2 border">Carbon emmitted:</th>
                         <td class="p-2 border">
-                            {{ totalCarbon.toLocaleString() }} kg of carbon
+                            {{ (totalCarbon / 1000).toFixed(2) }} kg of carbon
                         </td>
                     </tr>
                     <tr>
                         <th class="p-2 border">Suggested donation amount:</th>
                         <td class="p-2 border">
-                            ${{ Math.round(totalCarbon / 1000) }}
+                            ${{ Math.ceil(totalCarbon / 10000).toFixed(2) }}
                         </td>
                     </tr>
                 </tbody>
@@ -74,7 +74,10 @@
                 An African forest elephant would need to live for
                 <strong
                     >{{
-                        (totalCarbon / ELEPHANT_PER_YEAR_CARBON).toFixed(2)
+                        (
+                            totalCarbon /
+                            (1000 * ELEPHANT_PER_YEAR_CARBON)
+                        ).toFixed(2)
                     }}
                     years</strong
                 >
@@ -94,8 +97,8 @@ import { MAPBOX_TOKEN, RAPID_API_KEY } from "@/config"
 import DropdownSearch, { SelectOption } from "@/components/DropdownSearch.vue"
 import { AirportInfo, GeoCoords } from "@/models"
 import { calcVertex } from "@/calc"
-
-const ELEPHANT_PER_YEAR_CARBON = 26000 / 65
+//                               kg / years
+const ELEPHANT_PER_YEAR_CARBON = 26_000 / 65
 
 async function loadAirports(): Promise<AirportInfo[]> {
     const data = (await Axios.get("/airports.json")).data
@@ -133,7 +136,7 @@ function calculateDistance(pointA: GeoCoords, pointB: GeoCoords) {
 }
 
 function calculateCarbonEmmission(distance: number) {
-    return Math.round(distance * (12 / 44) * 0.29) // outputs kg of carbon
+    return Math.round(distance * (12 / 44) * 49.1) // outputs grams of carbon
 }
 
 export default defineComponent({
