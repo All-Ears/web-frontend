@@ -8,11 +8,12 @@
             @focus="inFocus = true"
             @blur="inFocus = false"
             @change.stop
+            @keydown.tab="handleTab"
         />
         <div class="relative w-full">
             <div
                 v-show="inFocus"
-                class="absolute z-50 rounded bg-gray-100 p-0 w-full"
+                class="absolute z-max rounded bg-gray-100 p-0 w-full"
             >
                 <div
                     class="border rounded w-full p-2 cursor-pointer hover:bg-gray-200"
@@ -32,7 +33,7 @@
 import { computed, defineComponent, PropType, ref, watch } from "vue"
 
 export interface SelectOption {
-    value: any
+    value: object
     display: string
 }
 
@@ -45,7 +46,7 @@ export default defineComponent({
         },
 
         modelValue: {
-            type: Object as PropType<any | null>,
+            type: Object as PropType<object | null>,
             default: null,
         },
         maxVisibleOptions: {
@@ -54,7 +55,7 @@ export default defineComponent({
         },
     },
     setup(props, context) {
-        const chosenOption = ref<SelectOption | null>(null)
+        const chosenOption = ref<object | null>(null)
         const searchText = ref<string>("")
         const inputElement = ref<HTMLInputElement | null>(null)
         const displayedOptions = computed(() =>
@@ -66,7 +67,7 @@ export default defineComponent({
                 })
                 .slice(0, props.maxVisibleOptions)
         )
-        const inFocus = ref<boolean>(false)
+        const inFocus = ref(false)
         watch(
             () => props.modelValue,
             (val) => {
@@ -84,12 +85,19 @@ export default defineComponent({
             inputElement.value?.blur()
         }
 
+        function handleTab() {
+            if (displayedOptions.value.length > 0) {
+                updateChoice(displayedOptions.value[0])
+            }
+        }
+
         return {
             chosenOption,
             searchText,
             displayedOptions,
             inFocus,
             updateChoice,
+            handleTab,
             inputElement,
         }
     },

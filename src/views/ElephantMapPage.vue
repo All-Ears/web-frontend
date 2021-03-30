@@ -1,46 +1,42 @@
 <template>
-    <div class="h-full w-full p-5">
-        <div id="map" class="h-full w-full border rounded mx-auto">
+    <div class="h-9/10 w-full py-5 flex flex-row justify-evenly">
+        <div class="border rounded h-full w-9/20">
+            <highmaps
+                v-if="mapDataState === 'done'"
+                :options="mapOptions"
+                class="h-full w-full p-1"
+            />
             <font-awesome-icon
-                v-if="mapDataState === 'waiting'"
+                v-else-if="mapDataState === 'waiting'"
                 class="block h-full w-full mx-auto animate-spin"
                 icon="spinner"
                 size="3x"
-            ></font-awesome-icon>
+            />
         </div>
-
-        <div
-            v-show="selectedCountry"
-            id="graph"
-            class="h-full w-full rounded mx-auto"
-        ></div>
+        <div v-if="selectedCountryCode" class="border rounded h-full w-9/20">
+            <div class="h-full w-full p-1 rounded mx-auto">
+                <highcharts :options="chartOptions" />
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue"
-import {
-    Maps,
-    Legend as MapLegend,
-    DataLabel as MapDataLabel,
-    Selection,
-    MapsTooltip,
-    IShapeSelectedEventArgs,
-} from "@syncfusion/ej2-maps"
-import {
-    Chart,
-    Legend as ChartLegend,
-    DataLabel as ChartDataLabel,
-    Category,
-    LineSeries,
-} from "@syncfusion/ej2-charts"
+import { defineComponent, onMounted, ref, computed, Ref } from "vue"
 import Axios from "axios"
-import { filter, flatMap, groupBy, isArray, map, max, maxBy } from "lodash"
+import { flatMap, groupBy, isArray, map, max, maxBy } from "lodash"
 import { CountryRecord, ProcessState } from "@/models"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import Highcharts from "highcharts"
+
+interface MapModel extends Highcharts.SeriesMapDataOptions {
+    code: string
+    value: number
+    countryName: string
+}
 
 async function loadAfricaShapes(): Promise<object> {
-    return (await Axios.get("/africa.geojson")).data
+    return (await Axios.get("/africa-map.json")).data
 }
 
 async function loadPoachingData(): Promise<CountryRecord[]> {
@@ -48,15 +44,135 @@ async function loadPoachingData(): Promise<CountryRecord[]> {
     if (isArray(res)) {
         return res as CountryRecord[]
     } else {
-        throw new Error()
+        throw new Error("Could not load poaching data")
     }
 }
 
-function getLatestDataPerCountry(
-    poachingData: CountryRecord[]
-): CountryRecord[] {
+function getLatestDataPerCountry(poachingData: CountryRecord[]): MapModel[] {
     const countries = Object.values(groupBy(poachingData, (x) => x.countryName))
-    return flatMap(countries, (x) => maxBy(x, (y) => y.year) || x[0])
+    return flatMap(countries, (x) => maxBy(x, (y) => y.year) || x[0]).map(
+        (x) => ({
+            code: x.countryCode,
+            value: x.illegalCarcasses,
+            countryName: x.countryName,
+        })
+    )
+}
+
+function generateMapOptions(
+    geoJson: object | null,
+    data: MapModel[],
+    selectedString: Ref<string>,
+    selectedCountryName: Ref<string>
+): Highcharts.Options {
+    return {
+        chart: {
+            map: geoJson as Highcharts.GeoJSON,
+            spacingTop: 20,
+            spacingBottom: 0,
+            spacingLeft: 0,
+            spacingRight: 0,
+            marginLeft: 10,
+            marginRight: 10,
+        },
+        title: {
+            text: "African Forest Elephant Poaching",
+        },
+        mapNavigation: {
+            enabled: true,
+        },
+
+        series: [
+            {
+                type: "map",
+                color: "#EEEEEE",
+                borderColor: "#FFFFFF",
+                allowPointSelect: true,
+                data: data,
+                joinBy: "code",
+                dataLabels: {
+                    enabled: true,
+                    color: "#000000",
+                    format: "{point.countryName}",
+                    style: {
+                        fontFamily: "sans-serif",
+                        fontSize: ".9rem",
+                        fontWeight: "normal",
+                        textDecoration: "none",
+                        textOutline: "none",
+                    },
+                },
+                events: {
+                    // Select a country and if it
+                    click(event) {
+                        const model = (event.point as unknown) as MapModel
+                        if (selectedString.value === model.code) {
+                            selectedString.value = ""
+                        } else {
+                            selectedString.value = model.code
+                            selectedCountryName.value = model.countryName
+                        }
+                    },
+                },
+                name: "Illegal Carcasses",
+                tooltip: {
+                    pointFormat:
+                        "{point.name}: {point.value} forest elephants poached",
+                },
+            },
+        ],
+        colorAxis: {
+            type: "linear",
+            stops: [
+                [0, "rgba(52, 211, 153, .8)"],
+                [0.5, "rgba(252, 211, 77, .8)"],
+                [1, "rgba(239, 68, 68, .8)"],
+            ],
+        },
+    }
+}
+
+function generateChartOptions(
+    poachingData: CountryRecord[],
+    chartCountryName: string
+): Highcharts.Options {
+    return {
+        chart: {
+            spacingTop: 20,
+            spacingBottom: 0,
+            spacingLeft: 0,
+            spacingRight: 0,
+            marginLeft: 10,
+            marginRight: 10,
+            height: "90%",
+        },
+        title: {
+            text: `${chartCountryName} Poaching Values Over Time`,
+        },
+        xAxis: {
+            allowDecimals: false,
+            // categories: countryRecords.map((x) =>
+            //     x.year.toString()
+            // ),
+        },
+        tooltip: {
+            followPointer: true,
+            followTouchMove: true,
+            pointFormat:
+                "{point.illegalCarcasses} out of {point.carcasses} forest elephant deaths were poached",
+        },
+        series: [
+            {
+                type: "line",
+                name: `Forest Elephant Poaching Deaths per Year`,
+                data: poachingData.map((r) => ({
+                    x: r.year,
+                    y: r.illegalCarcasses,
+                    ...r,
+                })),
+            },
+        ],
+    }
 }
 
 export default defineComponent({
@@ -65,143 +181,55 @@ export default defineComponent({
     setup() {
         const graphShowing = ref<boolean>(false)
         const mapDataState = ref<ProcessState>("not started")
-        const mapData: CountryRecord[] = []
-        const poachingData: CountryRecord[] = []
-        const selectedCountry = ref<string>("")
-        let elephantMap: Maps | null = null
-        let elephantChart: Chart | null = null
-        Maps.Inject(MapDataLabel, MapLegend, Selection, MapsTooltip)
-        Chart.Inject(ChartDataLabel, Category, LineSeries, ChartLegend)
-
-        function initChart(data: CountryRecord[]) {
-            elephantChart = new Chart({
-                title: `${selectedCountry.value} Poaching Numbers Over Time`,
-                primaryXAxis: {
-                    name: "years",
-                    valueType: "Category",
-                    labelIntersectAction: "Rotate45",
-                    title: "Years",
-                },
-                primaryYAxis: {
-                    name: "deathsPerYear",
-                    valueType: "Double",
-                    title: "Elephant Poaching Deaths per Year",
-                },
-                legendSettings: {
-                    visible: true,
-                    position: "Bottom",
-                },
-                series: [
-                    {
-                        dataSource: data,
-                        xName: "year",
-                        yName: "illegalCarcasses",
-                        type: "Line",
-                        xAxisName: "years",
-                        yAxisName: "deathsPerYear",
-                        name: "Elephant Poaching Deaths per Year",
-                    },
-                ],
-            })
-            elephantChart.appendTo("#graph")
-        }
-
-        function handleCountrySelection(
-            shape: IShapeSelectedEventArgs | undefined
-        ) {
-            const data = shape?.data
-            if (data) {
-                selectedCountry.value = (data as CountryRecord).countryName
-                initChart(
-                    filter(
-                        poachingData,
-                        (x) => x.countryName === selectedCountry.value
-                    )
-                )
-                window.setTimeout(() => {
-                    document
-                        .getElementById("graph")
-                        ?.scrollIntoView({ behavior: "smooth" })
-                }, 500)
-            }
-        }
+        const mapData = ref<MapModel[]>([])
+        const poachingData = ref<CountryRecord[]>([])
+        const selectedCountryCode = ref<string>("")
+        const selectedCountryName = ref<string>("")
+        const africaMap = ref<object | null>(null)
+        const maxPoaching = ref<number>(0)
 
         async function initMap() {
             mapDataState.value = "waiting"
-            const africaShapes = await loadAfricaShapes()
-            poachingData.push(...(await loadPoachingData()))
-            mapData.push(...getLatestDataPerCountry(poachingData))
-            const maxPoaching =
-                max(map(mapData, (x) => x.illegalCarcasses)) || 1
-            elephantMap = new Maps({
-                titleSettings: {
-                    text: "Latest elephant poaching numbers per country",
-                },
-                layers: [
-                    {
-                        selectionSettings: {
-                            enable: true,
-                            border: { color: "#B3E5FC", width: 3 },
-                        },
-                        shapeData: africaShapes,
-                        shapeDataPath: "countryName",
-                        shapePropertyPath: "name",
-                        dataSource: mapData,
-                        dataLabelSettings: {
-                            labelPath: "countryName",
-                            visible: true,
-                            smartLabelMode: "Trim",
-                        },
-                        tooltipSettings: {
-                            visible: true,
-                            valuePath: "name",
-                        },
-                        shapeSettings: {
-                            colorValuePath: "illegalCarcasses",
-                            border: { color: "#FFFFFF", width: 1 },
-                            fill: "#EEEEEE",
-                            colorMapping: [
-                                {
-                                    from: 0,
-                                    to: Math.floor(maxPoaching * 0.33),
-                                    color: "#4CAF50", // Like Flutter's colors.green
-                                    minOpacity: 0.8,
-                                    maxOpacity: 0.2,
-                                    value: "Lowest 33% of countries",
-                                },
-                                {
-                                    from: Math.floor(maxPoaching * 0.33) + 1,
-                                    to: Math.floor(maxPoaching * 0.66),
-                                    color: "#FF9800", // Like Flutter's colors.orange
-                                    minOpacity: 0.2,
-                                    maxOpacity: 0.8,
-                                    value: "Mid 33% of countries",
-                                },
-                                {
-                                    from: Math.floor(maxPoaching * 0.66) + 1,
-                                    to: maxPoaching,
-                                    color: "#F44336", // Like Flutter's colors.red
-                                    minOpacity: 0.2,
-                                    maxOpacity: 0.8,
-                                    value: "Top 34% percentile of countries",
-                                },
-                            ],
-                        },
-                    },
-                ],
-                legendSettings: {
-                    visible: true,
-                    position: "Top",
-                },
-            })
-            elephantMap.shapeSelected = handleCountrySelection
+            africaMap.value = await loadAfricaShapes()
+            poachingData.value.push(...(await loadPoachingData()))
+            mapData.value.push(...getLatestDataPerCountry(poachingData.value))
+            maxPoaching.value = max(map(mapData.value, (x) => x.value)) || 1
             mapDataState.value = "done"
-
-            elephantMap.appendTo("#map")
         }
+
+        const mapOptions = computed(() =>
+            generateMapOptions(
+                africaMap.value,
+                mapData.value,
+                selectedCountryCode,
+                selectedCountryName
+            )
+        )
+
         onMounted(initMap)
 
-        return { graphShowing, mapDataState, selectedCountry }
+        const chartOptions = computed(() =>
+            generateChartOptions(
+                poachingData.value.filter(
+                    (x) => x.countryCode === selectedCountryCode.value
+                ),
+                selectedCountryName.value
+            )
+        )
+
+        return {
+            graphShowing,
+            mapDataState,
+            selectedCountryCode,
+            mapOptions,
+            chartOptions,
+        }
     },
 })
 </script>
+
+<style>
+.highcharts-container {
+    margin: 0 auto;
+}
+</style>

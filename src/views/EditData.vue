@@ -2,9 +2,9 @@
 div(class="p-4")
     font-awesome-icon(v-if="loadState === 'waiting'" class="block mx-auto h-40 animate-spin" icon="spinner" size="3x")
     p(v-else-if="loadState === 'failed'" class="text-center") Records could not be loaded
-    mike-record-table(v-show="loadState === 'done'" v-model:records="records")
+    mike-record-table(v-show="loadState === 'done'" v-model:records="records" id="table")
     div(class="h-20")
-    div(class="fixed bottom-0 h-20 w-screen flex flex-row justify-between items-center p-5 border-t-2 bg-white"
+    div(class="fixed bottom-0 left-0 h-20 w-screen flex flex-row justify-between items-center p-5 border-t-2 bg-white"
         v-if="loadState === 'done'")
         button(class="rounded bg-green-300 py-1 px-3" @click="addAndScrollToBottom()")
             font-awesome-icon(class="mr-2" icon="plus")
@@ -12,7 +12,7 @@ div(class="p-4")
         
         span(v-if="submissionState === 'failed'" class="text-red-400") There was a problem submitting your changes. Please contact an administrator if the problem persists.
         span(v-if="submissionState === 'done'" class="text-green-500") The database was successfully updated!
-        button(class="rounded bg-green-300 py-1 px-3" @click="saveChanges()")
+        button(class="rounded bg-green-300 py-1 px-3 " @click="saveChanges()")
             font-awesome-icon(v-if="submissionState !== 'waiting'" class="mr-2" icon="save")
             font-awesome-icon(v-else="submissionState === 'waiting'" class="mr-2 animate-spin" icon="spinner")
             | {{submissionState !== "waiting" ? "Save changes" : "Saving changes..."}}
@@ -25,7 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { MikeRecord, ProcessState, getMikePrimaryKey } from "@/models"
 import Axios, { AxiosResponse } from "axios"
 import { isArray, filter, differenceWith, isEqual } from "lodash"
-import Router from "@/router"
+import { logout } from "@/auth"
 
 function recordIsValid(record: MikeRecord): boolean {
     return Boolean(
@@ -41,7 +41,8 @@ function recordIsValid(record: MikeRecord): boolean {
             record.mikeSiteName &&
             record.year >= 0 &&
             record.carcasses >= 0 &&
-            record.illegalCarcasses >= 0
+            record.illegalCarcasses >= 0 &&
+            record.carcasses >= record.illegalCarcasses
     )
 }
 
@@ -67,12 +68,8 @@ export default defineComponent({
                     }
                     loadState.value = "done"
                 })
-                .catch((err) => {
-                    if (err.status == 401) {
-                        Router.push("login")
-                    } else {
-                        loadState.value = "failed"
-                    }
+                .catch(() => {
+                    loadState.value = "failed"
                 })
         }
 
@@ -89,6 +86,14 @@ export default defineComponent({
                 carcasses: 0,
                 illegalCarcasses: 0,
             })
+            window.setTimeout(
+                () =>
+                    window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: "smooth",
+                    }),
+                200
+            )
         }
 
         function saveChanges() {
@@ -127,8 +132,8 @@ export default defineComponent({
                     loadRecords()
                 })
                 .catch((err) => {
-                    if (err && err.status === 401) {
-                        Router.push("login")
+                    if (err?.response?.status === 401) {
+                        logout()
                     } else {
                         submissionState.value = "failed"
                     }
