@@ -59,7 +59,11 @@
                     <tr>
                         <th class="p-2 border">Suggested donation amount:</th>
                         <td class="p-2 border">
-                            ${{ Math.ceil(totalCarbon / 10000).toFixed(2) }}
+                            ${{
+                                Math.ceil((totalCarbon / 1000) * 0.41).toFixed(
+                                    2
+                                )
+                            }}
                         </td>
                     </tr>
                 </tbody>
@@ -97,7 +101,7 @@ import { MAPBOX_TOKEN, RAPID_API_KEY } from "@/config"
 import DropdownSearch, { SelectOption } from "@/components/DropdownSearch.vue"
 import { AirportInfo, GeoCoords } from "@/models"
 import { calcVertex } from "@/calc"
-//                               kg / years
+//                               kg of C / years
 const ELEPHANT_PER_YEAR_CARBON = 26_000 / 65
 
 async function loadAirports(): Promise<AirportInfo[]> {
