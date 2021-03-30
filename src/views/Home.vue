@@ -6,7 +6,7 @@
         <div class="w-1/3" style="background-color:white;">
             <img
                 src="/highreslogo.png"
-                alt=""
+                alt="Elephant Footprint's logo"
                 width="200"
                 style="margin-left:auto; margin-right:auto"
             />
@@ -28,60 +28,33 @@
         </div>
     </div>
     <div
-        class="flex flex-row justify-center pt-10 pb-10"
+        class="flex flex-row justify-center py-10"
         style="background-color:#e9f5fe"
     >
         <p class="text-2xl font-bold">Site Navigation and Descriptions</p>
     </div>
-    <div
-        class="flex flex-row w-full pt-10 pb-10 justify-center"
-        style="margin:0 auto;"
-    >
-        <div class="w-3/5" style="margin:0 auto;">
+    <div class="flex flex-row w-full my-0 mx-auto py-10 justify-center">
+        <div class="w-3/5 my-0 mx-auto">
             <div class="float-left w-1/2">
                 <p>
                     Why are african forest elephants important? <br />What is
                     the purpose of this application? Find out here.
                 </p>
             </div>
-            <div class="float-right w-1/2" style="text-align:center">
+            <div class="float-right w-1/2 text-center">
                 <router-link
                     to="/about"
                     tag="button"
-                    class="pl-5 pr-5 pt-2 pb-2 font-bold"
+                    class="px-5 py-2 font-bold"
                     style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px"
-                    >About</router-link
+                    >About Us</router-link
                 >
             </div>
         </div>
     </div>
-    <div
-        class="flex flex-row w-full pt-10 pb-10 justify-center"
-        style="margin:0 auto; background-color:#e9f5fe"
-    >
-        <div class="w-3/5" style="margin:0 auto;">
-            <div class="float-left w-1/2">
-                <p>
-                    An interactive map of poaching statistics for african<br />forest
-                    elephants within the countries they inhabit.
-                </p>
-            </div>
-            <div class="float-right w-1/2" style="text-align:center">
-                <router-link
-                    to="/elephantmap"
-                    tag="button"
-                    class="pl-5 pr-5 pt-2 pb-2 font-bold"
-                    style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px"
-                    >Elephant Map</router-link
-                >
-            </div>
-        </div>
-    </div>
-    <div
-        class="flex flex-row w-full pt-10 pb-10 justify-center"
-        style="margin:0 auto;"
-    >
-        <div class="w-3/5" style="margin:0 auto;">
+
+    <div class="flex flex-row w-full my-0 mx-auto py-10 justify-center">
+        <div class="w-3/5 my-0 mx-auto">
             <div class="float-left w-1/2">
                 <p>
                     How much carbon is estimated to be emitted during a
@@ -90,11 +63,11 @@
                     this value?<br />Find out here.
                 </p>
             </div>
-            <div class="float-right w-1/2" style="text-align:center">
+            <div class="float-right w-1/2 text-center">
                 <router-link
                     to="/carboncalculator"
                     tag="button"
-                    class="pl-5 pr-5 pt-2 pb-2 font-bold"
+                    class="px-5 py-2 font-bold"
                     style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px"
                     >Carbon Calculator</router-link
                 >
@@ -102,10 +75,10 @@
         </div>
     </div>
     <div
-        class="flex flex-row w-full pt-10 pb-10 justify-center"
-        style="margin:0 auto; background-color:#e9f5fe"
+        class="flex flex-row w-full py-10 justify-center my-0 mx-auto"
+        style="background-color:#e9f5fe"
     >
-        <div class="w-3/5" style="margin:0 auto;">
+        <div class="w-3/5 my-0 mx-auto">
             <div class="float-left w-1/2">
                 <p>
                     An introduction of several accredited anti-poaching<br />organizations.
@@ -114,13 +87,35 @@
                     much to donate.
                 </p>
             </div>
-            <div class="float-right w-1/2" style="text-align:center">
+            <div class="float-right w-1/2 text-center">
                 <router-link
                     to="/donate"
                     tag="button"
-                    class="pl-5 pr-5 pt-2 pb-2 font-bold"
+                    class="px-5 py-2 font-bold"
                     style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px"
                     >Donate</router-link
+                >
+            </div>
+        </div>
+    </div>
+    <div
+        class="flex flex-row w-full my-0 mx-auto py-10 justify-center"
+        style="background-color:#e9f5fe"
+    >
+        <div class="w-3/5 my-0 mx-auto">
+            <div class="float-left w-1/2">
+                <p>
+                    An interactive map of poaching statistics for african<br />forest
+                    elephants within the countries they inhabit.
+                </p>
+            </div>
+            <div class="float-right w-1/2 text-center">
+                <router-link
+                    to="/elephantmap"
+                    tag="button"
+                    class="px-5 py-2 font-bold"
+                    style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px"
+                    >Elephant Map</router-link
                 >
             </div>
         </div>
