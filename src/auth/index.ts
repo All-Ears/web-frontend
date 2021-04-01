@@ -1,6 +1,7 @@
 import Store from "@/store"
 import Axios from "axios"
 import dayjs from "dayjs"
+import Router from "@/router"
 
 function updateLoginState(newToken: string | undefined | null) {
     if (newToken) {
@@ -36,5 +37,6 @@ export async function renewSession() {
 
 export function logout() {
     Store.commit("updateSecurityToken", "")
-    Store.commit("updeateLoggedInUntil", dayjs(0).unix())
+    Store.commit("updateLoggedInUntil", dayjs(0).unix())
+    Router.push({ name: "Login" })
 }
