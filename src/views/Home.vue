@@ -4,7 +4,7 @@
         <img src="/highreslogo.png" alt="" width="200" style="margin-left:auto; margin-right:auto">
     </div>
     <div class="flex flex-col justify-center w-2/3">
-        <h1 class="text-center font-bold text-6xl">All Ears</h1>
+        <h1 class="text-center font-bold text-6xl">Elephant Footprint</h1>
         <h2 class="text-center text-2xl">An Educational Tool About<br>African Forest Elephants<br>and Carbon Emissions</h2>
     </div>
     <div class="w-1/3" style="background-color:white">
@@ -20,7 +20,7 @@
             <p>Why are african forest elephants important? <br>What is the purpose of this application? Find out here.</p>
         </div>
         <div class="float-right w-1/2" style="text-align:center">
-            <router-link to="/about" tag="button" class="pl-5 pr-5 pt-2 pb-2 font-bold" style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px">About</router-link>
+            <router-link to="/about" tag="button" style="background-color:powderblue; border-color:grey; border-style:solid; border-width:2px" class="pl-5 pr-5 pt-2 pb-2 font-bold">About</router-link>
         </div>
     </div>
 </div>
