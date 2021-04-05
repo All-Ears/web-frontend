@@ -1,11 +1,13 @@
 <template>
     <div class="h-9/10 w-full py-5 flex flex-row justify-evenly">
         <div class="border rounded h-full w-9/20">
-            <highmaps
-                v-if="mapDataState === 'done'"
-                :options="mapOptions"
-                class="h-full w-full p-1"
-            />
+            <template v-if="mapDataState === 'done'">
+                <highmaps :options="mapOptions" class="h-full w-full p-1" />
+                <p class="text-center mt-1">
+                    Select a country to see its poaching data.
+                </p>
+            </template>
+
             <font-awesome-icon
                 v-else-if="mapDataState === 'waiting'"
                 class="block h-full w-full mx-auto animate-spin"
@@ -13,6 +15,7 @@
                 size="3x"
             />
         </div>
+
         <div v-if="selectedCountryCode" class="border rounded h-full w-9/20">
             <div class="h-full w-full p-1 rounded mx-auto">
                 <highcharts :options="chartOptions" />
@@ -139,21 +142,42 @@ function generateChartOptions(
     return {
         chart: {
             spacingTop: 20,
-            spacingBottom: 0,
-            spacingLeft: 0,
-            spacingRight: 0,
-            marginLeft: 10,
-            marginRight: 10,
+            spacingBottom: 20,
             height: "90%",
+            showAxes: true,
         },
         title: {
             text: `${chartCountryName} Poaching Values Over Time`,
         },
         xAxis: {
             allowDecimals: false,
-            // categories: countryRecords.map((x) =>
-            //     x.year.toString()
-            // ),
+            type: "linear",
+            title: {
+                text: "Years",
+                style: {
+                    fontFamily: "sans-serif",
+                    fontSize: "1rem",
+                    fontWeight: "normal",
+                    textDecoration: "none",
+                    textOutline: "none",
+                },
+            },
+        },
+        yAxis: {
+            allowDecimals: false,
+            type: "linear",
+            title: {
+                text: "Elephants Poached",
+                style: {
+                    fontFamily: "sans-serif",
+                    fontSize: "1rem",
+                    fontWeight: "normal",
+                    textDecoration: "none",
+                    textOutline: "none",
+                },
+            },
+            gridLineWidth: 1,
+            floor: 0,
         },
         tooltip: {
             followPointer: true,
