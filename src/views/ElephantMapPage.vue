@@ -1,11 +1,13 @@
 <template>
     <div class="h-9/10 w-full py-5 flex flex-row justify-evenly">
         <div class="border rounded h-full w-9/20">
-            <highmaps
-                v-if="mapDataState === 'done'"
-                :options="mapOptions"
-                class="h-full w-full p-1"
-            />
+            <template v-if="mapDataState === 'done'">
+                <highmaps :options="mapOptions" class="h-full w-full p-1" />
+                <p class="text-center mt-1">
+                    Select a country to see its poaching data.
+                </p>
+            </template>
+
             <font-awesome-icon
                 v-else-if="mapDataState === 'waiting'"
                 class="block h-full w-full mx-auto animate-spin"
@@ -13,6 +15,7 @@
                 size="3x"
             />
         </div>
+
         <div v-if="selectedCountryCode" class="border rounded h-full w-9/20">
             <div class="h-full w-full p-1 rounded mx-auto">
                 <highcharts :options="chartOptions" />
