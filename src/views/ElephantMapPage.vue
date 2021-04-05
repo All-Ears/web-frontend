@@ -139,21 +139,42 @@ function generateChartOptions(
     return {
         chart: {
             spacingTop: 20,
-            spacingBottom: 0,
-            spacingLeft: 0,
-            spacingRight: 0,
-            marginLeft: 10,
-            marginRight: 10,
+            spacingBottom: 20,
             height: "90%",
+            showAxes: true,
         },
         title: {
             text: `${chartCountryName} Poaching Values Over Time`,
         },
         xAxis: {
             allowDecimals: false,
-            // categories: countryRecords.map((x) =>
-            //     x.year.toString()
-            // ),
+            type: "linear",
+            title: {
+                text: "Years",
+                style: {
+                    fontFamily: "sans-serif",
+                    fontSize: "1rem",
+                    fontWeight: "normal",
+                    textDecoration: "none",
+                    textOutline: "none",
+                },
+            },
+        },
+        yAxis: {
+            allowDecimals: false,
+            type: "linear",
+            title: {
+                text: "Elephants Poached",
+                style: {
+                    fontFamily: "sans-serif",
+                    fontSize: "1rem",
+                    fontWeight: "normal",
+                    textDecoration: "none",
+                    textOutline: "none",
+                },
+            },
+            gridLineWidth: 1,
+            floor: 0,
         },
         tooltip: {
             followPointer: true,
