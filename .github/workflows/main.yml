@@ -38,3 +38,5 @@ jobs:
           push-branch: build
           commit-message: 'Added built website to build branch'
           rebase: 'true' # pull and rebase before commit
+          name: Github Bot
+          email: donotemailme@github.com
