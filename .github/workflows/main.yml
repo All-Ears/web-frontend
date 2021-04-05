@@ -32,11 +32,9 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Build App
         run: yarn build
-      - name: Push to build branch
-        uses: github-actions-x/commit@v2.8
-        with:
-          push-branch: build
-          commit-message: 'Added built website to build branch'
-          rebase: 'true' # pull and rebase before commit
-          name: Github Bot
-          email: donotemailme@github.com
+      - name: Push git subdirectory as branch
+        uses: s0/git-publish-subdir-action@v2.4.0
+        env:
+          REPO: self
+          BRANCH: build
+          FOLDER: dist
