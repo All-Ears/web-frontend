@@ -1,7 +1,10 @@
 <template lang="pug">
-nav(id="nav" class="flex flex-row justify-between bg-gray-200 p-3")
+nav(id="nav" class="flex flex-row justify-between items-center h-16 px-3 text-xl")
     div(class="flex flex-row justify-around")
-        router-link(class="mx-2" to="/") 
+        router-link(class="mx-2 flex flex-row" to="/") 
+            div(class="w-16 mr-2")
+            div(class="absolute w-16 rounded shadow-md")
+                img(src="app-logo-bg.png")
             h1(class="font-bold") Elephant Footprint
         router-link(class="mx-2" to="/about") About Us
         router-link(class="mx-2" to="/carboncalculator") Carbon Calculator
@@ -27,8 +30,10 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
+@import url('https://fonts.googleapis.com/css2?family=Open%20Sans:wght@100;400&display=swap')
+
 #app
-    font-family: Avenir, Helvetica, Arial, sans-serif
+    font-family: 'Open Sans', Avenir, Helvetica, Arial, sans-serif
     height: 100%
 
 #nav

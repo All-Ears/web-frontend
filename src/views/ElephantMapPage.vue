@@ -14,6 +14,14 @@
                 icon="spinner"
                 size="3x"
             />
+            <div
+                v-else-if="mapDataState === 'failed'"
+                class="h-full w-full flex flex-row justify-center items-center"
+            >
+                <p class="block w-full mx-auto text-red-500 text-center">
+                    The poaching data could not be loaded.
+                </p>
+            </div>
         </div>
 
         <div v-if="selectedCountryCode" class="border rounded h-full w-9/20">
@@ -39,13 +47,18 @@ interface MapModel extends Highcharts.SeriesMapDataOptions {
 }
 
 async function loadAfricaShapes(): Promise<object> {
-    return (await Axios.get("/africa-map.json")).data
+    const res = await Axios.get("/africa-map.json")
+    if (res.status == 200) {
+        return res.data
+    } else {
+        throw new Error("Could not load map shapes")
+    }
 }
 
 async function loadPoachingData(): Promise<CountryRecord[]> {
-    const res = (await Axios.get("/api/countryrecords")).data
-    if (isArray(res)) {
-        return res as CountryRecord[]
+    const res = await Axios.get("/api/countryrecords")
+    if (res.status == 200 && isArray(res.data)) {
+        return res.data as CountryRecord[]
     } else {
         throw new Error("Could not load poaching data")
     }
@@ -214,11 +227,17 @@ export default defineComponent({
 
         async function initMap() {
             mapDataState.value = "waiting"
-            africaMap.value = await loadAfricaShapes()
-            poachingData.value.push(...(await loadPoachingData()))
-            mapData.value.push(...getLatestDataPerCountry(poachingData.value))
-            maxPoaching.value = max(map(mapData.value, (x) => x.value)) || 1
-            mapDataState.value = "done"
+            try {
+                africaMap.value = await loadAfricaShapes()
+                poachingData.value.push(...(await loadPoachingData()))
+                mapData.value.push(
+                    ...getLatestDataPerCountry(poachingData.value)
+                )
+                maxPoaching.value = max(map(mapData.value, (x) => x.value)) || 1
+                mapDataState.value = "done"
+            } catch {
+                mapDataState.value = "failed"
+            }
         }
 
         const mapOptions = computed(() =>
