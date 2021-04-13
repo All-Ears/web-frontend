@@ -30,6 +30,15 @@
             </div>
         </div>
     </div>
+    <p class="text-center pt-1">
+        All poaching data is from the
+        <a
+            class="text-blue-400"
+            href="https://cites.org/eng/prog/mike/index.php/portal"
+            >CITES MIKE</a
+        >
+        database
+    </p>
 </template>
 
 <script lang="ts">
@@ -111,7 +120,7 @@ function generateMapOptions(
                     color: "#000000",
                     format: "{point.countryName}",
                     style: {
-                        fontFamily: "sans-serif",
+                        fontFamily: "Open Sans",
                         fontSize: ".9rem",
                         fontWeight: "normal",
                         textDecoration: "none",
@@ -168,7 +177,7 @@ function generateChartOptions(
             title: {
                 text: "Years",
                 style: {
-                    fontFamily: "sans-serif",
+                    fontFamily: "Open Sans",
                     fontSize: "1rem",
                     fontWeight: "normal",
                     textDecoration: "none",
@@ -182,7 +191,7 @@ function generateChartOptions(
             title: {
                 text: "Elephants Poached",
                 style: {
-                    fontFamily: "sans-serif",
+                    fontFamily: "Open Sans",
                     fontSize: "1rem",
                     fontWeight: "normal",
                     textDecoration: "none",
