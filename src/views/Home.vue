@@ -9,6 +9,32 @@
                 Emissions
             </p>
             <hr class="my-3" />
+            <p>
+                As
+                <a
+                    class="text-blue-400"
+                    href="https://www.nytimes.com/2019/08/19/science/elephants-climate-change.html"
+                    >highlighted in the New York Times</a
+                >, recent
+                <a
+                    class="text-blue-400"
+                    href="https://www.nature.com/articles/s41561-019-0395-6"
+                    >scientific research</a
+                >
+                has quantified how African forest elephants sequester carbon in
+                tropical forests, thus reducing climate change and providing a
+                carbon storage service worth US$43 billion dollars. By
+                contributing the suggested amount to offset your flight’s carbon
+                emissions, your money will help fight climate change and
+                conserve
+                <a
+                    class="text-blue-400"
+                    href="https://www.nytimes.com/2021/03/25/science/elephants-africa-endangered.html"
+                    >dangerously threatened forest elephant populations</a
+                >.
+            </p>
+            <hr class="my-3" />
+
             <div class="grid grid-flow-row grid-cols-3 gap-y-4 pt-1">
                 <div
                     class="col-span-2 w-full h-full flex flex-row items-center"
@@ -29,10 +55,9 @@
                     class="col-span-2 w-full h-full flex flex-row items-center"
                 >
                     <p class="font-medium">
-                        How much carbon is estimated to be emitted during a
-                        flight between airports? How much money could be used
-                        for elephant conservation that would ultimately offset
-                        this value?
+                        Calculate your "elephant footprint" or how many forest
+                        elephants it will take to sequester the carbon your
+                        flight emits.
                     </p>
                 </div>
                 <div
