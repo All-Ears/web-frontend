@@ -32,7 +32,7 @@
                         How much carbon is estimated to be emitted during a
                         flight between airports? How much money could be used
                         for elephant conservation that would ultimately offset
-                        this value? Find out here.
+                        this value?
                     </p>
                 </div>
                 <div
