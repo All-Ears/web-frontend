@@ -1,17 +1,17 @@
 <template>
-    <div class=" w-full h-full px-auto py-5">
+    <div class="xl:w-3/5 lg:w-4/5 w-full h-full px-auto mx-auto py-5">
         <h1 class="font-bold text-center text-2xl w-full pb-3">
             Elephant Conservation Organizations
         </h1>
-        <hr class="w-3/5 mx-auto" />
-        <div class="flex flex-row w-3/5 p-5 mx-auto">
+        <hr />
+        <div class="md:flex md:flex-row p-5 mx-auto">
             <a
-                class="flex-none block w-80 object-contain"
+                class="flex-none block w-full sm:w-64 lg:w-80"
                 href="https://www.tusk.org"
             >
-                <img src="/Tusk-logo.png" alt="" class="w-full" />
+                <img src="/images/tusk-logo.png" alt="" class="w-full" />
             </a>
-            <div class="p-3">
+            <div class="py-3 md:p-3">
                 <h2 class="text-xl font-bold">Tusk</h2>
                 <p>
                     Tusk works with its project partners to find sustainable
@@ -21,15 +21,15 @@
                 </p>
             </div>
         </div>
-        <hr class="w-3/5 mx-auto" />
-        <div class="flex flex-row w-3/5 p-5 mx-auto">
+        <hr class=" mx-auto" />
+        <div class="md:flex md:flex-row p-5 mx-auto">
             <a
-                class="flex-none block w-80 object-contain"
+                class="flex-none block w-full sm:w-64 lg:w-80"
                 href="https://www.wcs.org/our-work/species/african-elephants"
             >
-                <img src="/Wildlife-Conservation-Society-logo.png" alt="" />
+                <img src="/images/wcs-logo.png" alt="" />
             </a>
-            <div class="p-3">
+            <div class="py-3 md:p-3">
                 <h2 class="text-xl font-bold">Wildlife Conservation Society</h2>
                 <p>
                     WCS supports rangers and helps government agencies better
@@ -39,15 +39,15 @@
                 </p>
             </div>
         </div>
-        <hr class="w-3/5 mx-auto" />
-        <div class="flex flex-row w-3/5 p-5 mx-auto">
+        <hr class="mx-auto" />
+        <div class="md:flex md:flex-row p-5 mx-auto">
             <a
-                class="flex-none block w-80 object-contain"
+                class="flex-none block w-full sm:w-64 lg:w-80"
                 href="https://wildaid.org/about/ways-to-give/"
             >
-                <img src="/wildaid-logo.png" alt="" />
+                <img src="/images/wildaid-logo.png" alt="" />
             </a>
-            <div class="p-3">
+            <div class="py-3 md:p-3">
                 <h2 class="text-xl font-bold">WildAid</h2>
                 <p>
                     WildAid works to reduce global consumption of wildlife
@@ -56,15 +56,15 @@
                 </p>
             </div>
         </div>
-        <hr class="w-3/5 mx-auto" />
-        <div class="flex flex-row w-3/5 p-5 mx-auto">
+        <hr class=" mx-auto" />
+        <div class="md:flex md:flex-row p-5 mx-auto">
             <a
-                class="flex-none block w-80 object-contain"
+                class="flex-none block w-full sm:w-64 lg:w-80"
                 href="https://www.speciesprotection.com"
             >
-                <img src="/espa-logo.png" alt="" />
+                <img src="/images/espa-logo.png" alt="" />
             </a>
-            <div class="p-3">
+            <div class="py-3 md:p-3">
                 <h2 class="text-xl font-bold">
                     Endangered Species Protection Agency
                 </h2>

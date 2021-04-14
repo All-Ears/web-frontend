@@ -1,36 +1,43 @@
 <template>
-    <div class="h-9/10 w-full py-5 flex flex-row justify-evenly">
-        <div class="border rounded h-full w-9/20">
-            <template v-if="mapDataState === 'done'">
-                <highmaps :options="mapOptions" class="h-full w-full p-1" />
-                <p class="text-center mt-1">
-                    Select a country to see its poaching data.
-                </p>
-            </template>
-
-            <font-awesome-icon
-                v-else-if="mapDataState === 'waiting'"
-                class="block h-full w-full mx-auto animate-spin"
-                icon="spinner"
-                size="3x"
-            />
-            <div
-                v-else-if="mapDataState === 'failed'"
-                class="h-full w-full flex flex-row justify-center items-center"
-            >
-                <p class="block w-full mx-auto text-red-500 text-center">
-                    The poaching data could not be loaded.
-                </p>
+    <div
+        class="lg:h-full max-h-3/2 min-h-full w-full py-5 px-0 m-0 flex lg:flex-row flex-col lg:justify-around lg:items-center"
+    >
+        <div class="p-1 h-4/5 w-full lg:h-full lg:w-9/20">
+            <div class="h-full w-full border rounded">
+                <highmaps
+                    v-if="mapDataState === 'done'"
+                    :options="mapOptions"
+                    class="h-full w-full p-1"
+                />
+                <font-awesome-icon
+                    v-else-if="mapDataState === 'waiting'"
+                    class="block h-full w-full mx-auto animate-spin"
+                    icon="spinner"
+                    size="3x"
+                />
+                <div
+                    v-else-if="mapDataState === 'failed'"
+                    class="h-full w-full flex flex-row justify-center items-center"
+                >
+                    <p class="w-full text-red-500 text-center">
+                        The poaching data could not be loaded.
+                    </p>
+                </div>
             </div>
+            <p v-if="mapDataState === 'done'" class="text-center mt-1">
+                Select a country to see its poaching data.
+            </p>
         </div>
-
-        <div v-if="selectedCountryCode" class="border rounded h-full w-9/20">
-            <div class="h-full w-full p-1 rounded mx-auto">
+        <div
+            v-if="selectedCountryCode"
+            class="p-1 h-4/5 w-full lg:h-full lg:w-9/20"
+        >
+            <div class="h-full w-full border rounded mx-auto">
                 <highcharts :options="chartOptions" />
             </div>
         </div>
     </div>
-    <p class="text-center pt-1">
+    <p class="text-center py-1">
         All poaching data is from the
         <a
             class="text-blue-400"
@@ -52,11 +59,12 @@ import Highcharts from "highcharts"
 interface MapModel extends Highcharts.SeriesMapDataOptions {
     code: string
     value: number
+    year: number
     countryName: string
 }
 
 async function loadAfricaShapes(): Promise<object> {
-    const res = await Axios.get("/africa-map.json")
+    const res = await Axios.get("/map/africa-map.json")
     if (res.status == 200) {
         return res.data
     } else {
@@ -79,6 +87,7 @@ function getLatestDataPerCountry(poachingData: CountryRecord[]): MapModel[] {
         (x) => ({
             code: x.countryCode,
             value: x.illegalCarcasses,
+            year: x.year,
             countryName: x.countryName,
         })
     )
@@ -142,7 +151,7 @@ function generateMapOptions(
                 name: "Illegal Carcasses",
                 tooltip: {
                     pointFormat:
-                        "{point.name}: {point.value} forest elephants poached",
+                        "{point.name}: {point.value} forest elephants poached in {point.year}",
                 },
             },
         ],
