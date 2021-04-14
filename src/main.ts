@@ -10,6 +10,8 @@ import VueHighcharts from "vue-highcharts"
 import { library } from "@fortawesome/fontawesome-svg-core"
 import {
     faTimesCircle,
+    faTimes,
+    faBars,
     faSave,
     faPlus,
     faFileCsv,
@@ -18,7 +20,15 @@ import {
 
 loadMap(Highcharts)
 
-library.add(faTimesCircle, faPlus, faSave, faFileCsv, faSpinner)
+library.add(
+    faTimesCircle,
+    faPlus,
+    faSave,
+    faFileCsv,
+    faSpinner,
+    faTimes,
+    faBars
+)
 createApp(App)
     .use(store)
     .use(router)

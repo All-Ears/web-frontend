@@ -1,6 +1,6 @@
 <template>
     <div class="h-full w-full p-5">
-        <div class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto">
+        <div class="xl:w-1/3 md:w-2/3 w-full mx-auto">
             <h1 class="font-bold text-center text-2xl w-full pb-3">
                 Flight Carbon Calculator
             </h1>
@@ -38,11 +38,11 @@
                 and carbon generated** by the flight.
             </p>
         </div>
-        <div class="w-4/5 h-2/3 mx-auto p-2">
+        <div class="w-full lg:w-4/5 h-2/3 mx-auto p-2">
             <div id="map" class="h-full w-full border rounded"></div>
         </div>
 
-        <div class="lg:w-1/3 md:w-1/2 sm:w-full mx-auto p-2 pb-4">
+        <div class="xl:w-1/3 md:w-2/3 w-full mx-auto p-2 pb-4">
             <p class="p-1">
                 An African forest elephant would cause
                 <strong>{{ ELEPHANT_PER_YEAR_CARBON.toFixed(2) }} kg</strong>
@@ -107,22 +107,12 @@
                 calculated is the shortest distance between the two airports.
             </p>
             <p class="p-1">
-                **Our carbon emmision values use methods from the University of
-                Oxford's Environmental Change Institute's
+                **Our carbon emmision values use methods from the UK National
+                Energy Foundation's
                 <a
                     class="text-blue-400"
-                    href="https://www.eci.ox.ac.uk/research/energy/downloads/jardine09-carboninflights.pdf"
-                    >research</a
-                >,
-                <a
-                    class="text-blue-400"
-                    href="https://www.carbonindependent.org/22.html"
-                    >CarbonIndependent.org</a
-                >, and the ICAO's
-                <a
-                    class="text-blue-400"
-                    href="https://www.icao.int/environmental-protection/Carbonoffset/Pages/default.aspx"
-                    >Carbon Emissions Calculator</a
+                    href="http://www.carbon-calculator.org.uk/"
+                    >Carbon Calculator</a
                 >
             </p>
         </div>
