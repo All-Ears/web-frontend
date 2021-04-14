@@ -32,7 +32,6 @@ export default defineComponent({
         const pwdInvalid = ref(false)
         const serverProblem = ref(false)
         function submitPassword(pwd: string) {
-            console.log("called submit func")
             login(pwd)
                 .then(() => {
                     serverProblem.value = false
