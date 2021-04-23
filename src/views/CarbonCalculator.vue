@@ -37,6 +37,13 @@
                 Select two airports in the dropdown to calculate the distance*
                 and carbon generated** by the flight.
             </p>
+            <p
+                class="p-1 text-red-400"
+                v-for="airport in problemAirports"
+                :key="'airport code: ' + airport.iataCode"
+            >
+                {{ airport.location }} has no location information available.
+            </p>
         </div>
         <div class="w-full lg:w-4/5 h-2/3 mx-auto p-2">
             <div id="map" class="h-full w-full border rounded"></div>
@@ -141,7 +148,7 @@ async function loadAirports(): Promise<AirportInfo[]> {
     }
 }
 
-async function getLatLong(airport: AirportInfo): Promise<GeoCoords> {
+async function getLatLong(airport: AirportInfo): Promise<GeoCoords | null> {
     const res = (
         await Axios.get("https://airport-info.p.rapidapi.com/airport", {
             headers: {
@@ -152,7 +159,11 @@ async function getLatLong(airport: AirportInfo): Promise<GeoCoords> {
             params: { iata: airport.iataCode },
         })
     ).data
-    return { latitude: res.latitude, longitude: res.longitude }
+    if (res.latitude || res.longitude) {
+        return { latitude: res.latitude, longitude: res.longitude }
+    } else {
+        return null
+    }
 }
 
 function calculateDistance(pointA: GeoCoords, pointB: GeoCoords) {
@@ -178,6 +189,7 @@ export default defineComponent({
         const startAirport = ref<AirportInfo | null>(null)
         const endAirport = ref<AirportInfo | null>(null)
         const airportList = ref<AirportInfo[]>([])
+        const problemAirports = ref<AirportInfo[]>([])
         let map: Map | null = null
         let flightLine: Curve | null = null
         const airportOptions = computed<SelectOption[]>(() => {
@@ -190,11 +202,14 @@ export default defineComponent({
         })
         const totalDistance = ref(0)
         const totalCarbon = ref(0)
-
-        function drawLineOnMap(start: GeoCoords, end: GeoCoords) {
+        function clearMap() {
             if (flightLine) {
                 map?.removeLayer(flightLine)
+                flightLine = null
             }
+        }
+        function drawLineOnMap(start: GeoCoords, end: GeoCoords) {
+            clearMap()
             const vertex = calcVertex(start, end, 0.3)
             flightLine = L.curve(
                 [
@@ -222,15 +237,31 @@ export default defineComponent({
                 endAirport.value &&
                 !isEqual(startAirport.value, endAirport.value)
             ) {
+                totalDistance.value = 0
+                totalCarbon.value = 0
+                problemAirports.value = []
+                clearMap()
+
                 const [startCoords, endCoords] = await Promise.all([
                     getLatLong(startAirport.value),
                     getLatLong(endAirport.value),
                 ])
-                drawLineOnMap(startCoords, endCoords)
-                totalDistance.value = calculateDistance(startCoords, endCoords)
-                totalCarbon.value = calculateCarbonEmmission(
-                    totalDistance.value
-                )
+                if (!startCoords) {
+                    problemAirports.value.push(startAirport.value)
+                }
+                if (!endCoords) {
+                    problemAirports.value.push(endAirport.value)
+                }
+                if (startCoords && endCoords) {
+                    drawLineOnMap(startCoords, endCoords)
+                    totalDistance.value = calculateDistance(
+                        startCoords,
+                        endCoords
+                    )
+                    totalCarbon.value = calculateCarbonEmmission(
+                        totalDistance.value
+                    )
+                }
             }
         }
 
@@ -259,6 +290,7 @@ export default defineComponent({
 
         return {
             airportOptions,
+            problemAirports,
             startAirport,
             endAirport,
             handleSubmit,
